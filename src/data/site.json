@@ -1,0 +1,423 @@
+{
+ "site": {
+  "name": "VinFast Đà Nẵng",
+  "legalName": "Đại lý VinFast Đà Nẵng",
+  "tagline": "Đại Lý Chính Hãng Của VinFast Việt Nam",
+  "url": "https://vinfastdanang.net",
+  "logo": "/uploads/2026/06/vinfastdanang.webp",
+  "hotline": "0906 412 894",
+  "hotlineRaw": "0906412894",
+  "email": "nthung526@gmail.com",
+  "address": "115 Nguyễn Văn Linh, Phường Hải Châu, Đà Nẵng",
+  "addressLocality": "Đà Nẵng",
+  "zalo": "https://zalo.me/0906412894",
+  "facebook": "https://www.facebook.com/vinfastdanang.net",
+  "openingHours": "Mo-Su 07:30-21:00",
+  "geo": {
+   "lat": 16.0471,
+   "lng": 108.2068
+  },
+  "ctaBar": {
+   "call": "Nhấn gọi - Ưu đãi thêm 50TR",
+   "zalo": "Chat Zalo"
+  }
+ },
+ "home": {
+  "heroSlides": [
+   {
+    "image": "/uploads/2026/02/vinhxdcom_vf_8_the_he_moi_deskotp_new.webp",
+    "alt": "VinFast VF 8 thế hệ mới tại VinFast Đà Nẵng",
+    "href": "/xe/new-vinfast-vf8"
+   },
+   {
+    "image": "/uploads/2026/04/vinhxdcom-baner-vinfast-042026-5.webp",
+    "alt": "Ưu đãi mua xe VinFast tháng 04/2026",
+    "href": "/bang-gia-xe"
+   },
+   {
+    "image": "/uploads/2026/04/vinhxdcom-baner-vinfast-042026-3.webp",
+    "alt": "Chương trình khuyến mãi xe điện VinFast",
+    "href": "/bang-gia-xe"
+   },
+   {
+    "image": "/uploads/2026/04/vinhxdcom-baner-vinfast-042026-4.webp",
+    "alt": "Trả góp xe VinFast lãi suất ưu đãi",
+    "href": "/thu-tuc-tra-gop"
+   },
+   {
+    "image": "/uploads/2026/04/vinhxdcom-baner-vinfast-042026-2.webp",
+    "alt": "Đăng ký lái thử xe VinFast tại Đà Nẵng",
+    "href": "/dang-ky-lai-thu"
+   },
+   {
+    "image": "/uploads/2026/04/vinhxdcom-baner-vinfast-042026-1.webp",
+    "alt": "Bảng giá xe VinFast mới nhất tại Đà Nẵng",
+    "href": "/bang-gia-xe"
+   }
+  ],
+  "quickLinks": [
+   {
+    "label": "mua xe trả góp",
+    "href": "/thu-tuc-tra-gop"
+   },
+   {
+    "label": "đăng ký lái thử",
+    "href": "/dang-ky-lai-thu"
+   }
+  ],
+  "featureBanners": [
+   {
+    "title": "VF 7",
+    "image": "/uploads/2025/05/vinhxd_com20250426-banner-02.webp",
+    "href": "/xe/vinfast-vf7",
+    "cta": "TÌM HIỂU THÊM"
+   },
+   {
+    "title": "VF 3",
+    "image": "/uploads/2025/05/vinhxd_com20250425-banner-01.webp",
+    "href": "/xe/vinfast-vf-3",
+    "cta": "Tìm hiểu thêm"
+   },
+   {
+    "title": "EC Van",
+    "image": "/uploads/elementor/thumbs/vinhxd_combanner-r6bghedddxw1gzuw6j1kbl769c5cm6tpk20vvvdfuc.webp",
+    "href": "/xe/vinfast-ec-van",
+    "cta": "Tìm hiểu thêm"
+   }
+  ],
+  "sectionImages": {
+   "news": "/uploads/2025/06/h-news.png",
+   "promo": "/uploads/2025/06/h-km.png"
+  },
+  "installmentCta": {
+   "title": "Hỗ trợ mua XE vinfast trả góp đến 85%",
+   "phone": "0906 412 894"
+  },
+  "about": {
+   "heading": "VinFast Đà Nẵng",
+   "image": "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-10.webp",
+   "features": [
+    {
+     "title": "CAM KẾT BÁN GIÁ RẺ NHẤT",
+     "text": "Với nhiều Chương trình khuyến mãi hấp dẫn, quà tặng đặc biệt và liên kết với mạng lưới ngân hàng lớn mạnh tại Việt Nam sẽ giúp cho người dùng yên tâm về VinFast Đà Nẵng"
+    },
+    {
+     "title": "Hết lòng vì khách hàng",
+     "text": "Đội ngũ tư vấn bán hàng luôn sẵn lòng giúp tư vấn để tìm ra chiếc xe ưng ý cho quý khách hàng. Hỗ trợ 24/7 tận tâm, nhiệt tình, có trách nhiệm."
+    },
+    {
+     "title": "ĐẠI LÝ Tốt nhất",
+     "text": "Chúng tôi tự hào là đại lý bán hàng tốt nhất trong những năm qua, với đội ngũ nhân viên đào tạo chuyên nghiệp luôn nằm top tư vấn bán hàng xuất sắc trong hệ thống sẽ mang đến chất lượng, dịch vụ tốt nhất."
+    }
+   ]
+  },
+  "showroomGallery": [
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-1-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-2-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-7-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-8-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-3-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-9-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-4-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-5-400x300.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-6-400x300.webp"
+  ],
+  "videos": [
+   {
+    "title": "video giới thiệu",
+    "youtubeId": "_oYkfh2xuec"
+   },
+   {
+    "title": "VinFast Đà Nẵng",
+    "youtubeId": "jACGQo1G0tU"
+   }
+  ],
+  "seo": {
+   "title": "VinFast Đà Nẵng | Đại Lý Chính Hãng Của VinFast Việt Nam",
+   "description": "Với nhiều Chương trình khuyến mãi hấp dẫn, quà tặng đặc biệt và liên kết với mạng lưới ngân hàng lớn mạnh tại Việt Nam sẽ giúp cho người dùng yên tâm về VinFast Đà Nẵng"
+  }
+ },
+ "about": {
+  "slug": "gioi-thieu",
+  "title": "Giới Thiệu",
+  "seo": {
+   "title": "Giới Thiệu - VinFast Đà Nẵng",
+   "description": "Phòng trưng bày VinFast Hải Châu được thiết kế với không gian hiện đại, sang trọng, tạo điều kiện thuận lợi cho khách hàng khám phá và trải nghiệm các dòng xe VinFast."
+  },
+  "heading": "VinFast Đà Nẵng",
+  "intro": "VinFast Đà Nẵng tọa lạc tại một trong những tuyến đường chính của thành phố Đà Nẵng – Nguyễn Văn Linh, con đường được xem là đắt đỏ và sầm uất bậc nhất. Việc nằm trên trục đường chính này giúp showroom dễ dàng tiếp cận khách hàng qua lại, tăng khả năng nhận diện thương hiệu. Vị trí của đại lý nằm gần các tuyến đường giao thông huyết mạch, thuận tiện cho việc di chuyển của khách hàng đến từ các quận huyện khác nhau của thành phố Đà Nẵng cũng như các tỉnh lân cận. Showroom VinFast Đà Nẵng là một địa chỉ mua xe và bảo dưỡng uy tín nhất Miền Trung với kinh phí đầu tư lớn. Đại lý có quy mô diện tích rộng lớn chia thành nhiều khu vực chức năng đáp ứng nhu cầu ngày càng cao của khách hàng như phòng trưng bày sản phẩm, khu vực tiếp nhận khách hàng, xưởng dịch vụ, kho phụ tùng chính hãng,…",
+  "images": [
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-10.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-13.webp",
+   "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-12.webp"
+  ],
+  "paragraphs": [
+   "Phòng trưng bày VinFast Hải Châu được thiết kế với không gian hiện đại, sang trọng, tạo điều kiện thuận lợi cho khách hàng khám phá và trải nghiệm các dòng xe VinFast như VinFast VF3, VinFast VF5, VinFast VF6, VinFast E34, VinFast VF7, VinFast VF8, VinFast VF9,… với đa dạng phiên bản, màu sắc và kiểu dáng. Khách hàng đến mua xe và sử dụng dịch vụ sẽ được tư vấn tận tình, đưa ra giải pháp chọn lựa mẫu xe phù hợp với tài chính cũng như nhu cầu sử dụng. Ngoài ra, đại lý còn thường xuyên tổ chức chương trình lái thử miễn phí giúp bạn có thể trải nghiệm và đưa ra đánh giá khách quan về tính năng, độ tiên nghi, khả năng vận hành cùng tính năng an toàn.",
+   "Đại lý VinFast Hải Châu còn là nơi cung cấp phụ tùng chính hãng và dịch vụ bảo hành bảo dưỡng chuyên nghiệp. Tại đây thường xuyên diễn ra các chương trình ưu đãi hấp dẫn như lời cảm ơn khách hàng đã tin tưởng và đồng hành cùng đại lý.",
+   "Xưởng dịch vụ đầu tư các trang thiết bị hiện đại gồm có khu vực sửa chữa thân vỏ, phòng sơn sấy, máy kiểm tra bình điện, máy chẩn đoán, kho linh kiện và phụ tùng chính hãng,… Khách hàng sẽ hoàn toàn an tâm về chất lượng dịch vụ cùng với quy trình bảo hành, bảo dưỡng, sửa chữa theo tiêu chuẩn VinFast 3S. Đội ngũ kỹ thuật viên chuyên môn giỏi, luôn trong tâm thế sẵn sàng hỗ trợ khách hàng nhanh chóng và hiệu quả."
+  ],
+  "tabs": [
+   {
+    "title": "Địa điểm thuận lợi",
+    "text": "VinFast Hải Châu tọa lạc tại một trong những tuyến đường chính của thành phố Đà Nẵng – Nguyễn Văn Linh, con đường được xem là đắt đỏ và sầm uất bậc nhất. Việc nằm trên trục đường chính này giúp showroom dễ dàng tiếp cận khách hàng qua lại, tăng khả năng nhận diện thương hiệu. Vị trí của đại lý nằm gần các tuyến đường giao thông huyết mạch, thuận tiện cho việc di chuyển của khách hàng đến từ các quận huyện khác nhau của thành phố Đà Nẵng cũng như các tỉnh lân cận."
+   },
+   {
+    "title": "Công nghệ tiên tiến",
+    "text": "Xưởng dịch vụ đầu tư các trang thiết bị hiện đại gồm có khu vực sửa chữa thân vỏ, phòng sơn sấy, máy kiểm tra bình điện, máy chẩn đoán, kho linh kiện và phụ tùng chính hãng,… Khách hàng hoàn toàn an tâm về chất lượng dịch vụ cùng quy trình bảo hành, bảo dưỡng, sửa chữa theo tiêu chuẩn VinFast 3S."
+   },
+   {
+    "title": "Hết lòng vì khách hàng",
+    "text": "Đội ngũ tư vấn bán hàng luôn sẵn lòng giúp tư vấn để tìm ra chiếc xe ưng ý cho quý khách hàng. Hỗ trợ 24/7 tận tâm, nhiệt tình, có trách nhiệm."
+   }
+  ],
+  "sideImage": "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-4.webp"
+ },
+ "installment": {
+  "slug": "thu-tuc-tra-gop",
+  "title": "Thủ Tục Trả Góp",
+  "seo": {
+   "title": "Thủ Tục Trả Góp - VinFast Đà Nẵng",
+   "description": "Là trả trước một phần tiền mua xe, phần còn thiếu sẽ vay ngân hàng rồi hàng tháng trả dần cho ngân hàng cả gốc và lãi theo phuơng thức trừ lùi trong suốt thời gian trả góp."
+  },
+  "intro": [
+   "Là trả trước một phần tiền mua xe, phần còn thiếu sẽ vay ngân hàng rồi hàng tháng trả dần cho ngân hàng cả gốc và lãi theo phuơng thức trừ lùi trong suốt thời gian trả góp.",
+   "Ví dụ:",
+   "Khách hàng mua trả góp xe A trị giá 473 triệu theo phương thức: TRẢ TRƯỚC 25% = 118 triệu, phần còn lại là 355 triệu sẽ vay ngân hàng với lãi suất 5,99%/năm không đổi trong 6 tháng đầu tháng đầu, sau 6 tháng lãi suất là (9.1%/ 1 năm) và trả góp trong 5 năm (Cụ thể: sau khi tính toán, mỗi tháng khách hàng phải trả 1.773.750 VNĐ (tiền lãi cho tháng đầu tiên) và biên độ giảm dần đến tháng cuối cùng là theo quy tắc trừ lùi 29.563 VNĐ (tiễn lãi tháng cuối cùng). Như vậy trong 5 năm tổng số tiền lãi khách hàng phải chịu là 54.099.375 VNĐ.",
+   "Hỗ trợ tư vẫn mua xe Vinfast trả góp tới 80% giá trị xe, thời gian vay tối đa 7 năm. Thủ tục đơn giản nhanh gọn, thời gian thẩm duyệt trong vòng 24h, kể cả khách hàng ở tỉnh, bao đậu hồ sơ khó. Vui lòng liên hệ để được tư vấn chính xác."
+  ],
+  "formHeading": "ĐĂNG KÍ MUA xe vinfast TRẢ GÓP",
+  "groups": [
+   {
+    "title": "Lợi ích khi mua xe trả góp",
+    "items": [
+     "Số tiền vay lên đến 80% giá trị xe.",
+     "Thời gian vay lên đến 7 năm.",
+     "Tài trợ vay mua xe ô tô mới và xe ô tô đã qua sử dụng.",
+     "Thủ tục vay đơn giản, thời gian xử lý hồ sơ nhanh chóng.",
+     "Phương thức trả nợ linh hoạt: lãi trả hàng tháng/hàng quý, vốn trả theo phương thức vốn góp đều hoặc vốn góp bậc thang giảm dần."
+    ]
+   },
+   {
+    "title": "Điều kiện mua xe trả góp",
+    "items": [
+     "Cá nhân từ 18 tuổi trở lên.",
+     "Doanh nghiệp thành lập trên 6 tháng.",
+     "Có hợp đồng mua bán xe và các giấy tờ có liên quan.",
+     "Có thu nhập đảm bảo cho việc trả nợ cho Ngân hàng.",
+     "Có tài sản đảm bảo: là chính chiếc xe ô tô mà Quý khách mua, bất động sản hoặc tài sản khác."
+    ]
+   },
+   {
+    "title": "Đối tượng thích hợp nhất",
+    "items": [
+     "Doanh nhân, doanh nghiệp: những người có khả năng sử dụng tiền để kinh doanh sinh lời nhiều hơn là tỷ lệ lãi suất tiền cho vay của ngân hàng.",
+     "Những người rất cần sử dụng xe, sẽ có đủ tiền mua xe trong một tương lai gần nhưng hiện tại chưa tập trung đủ tiền để mua xe trả thẳng."
+    ]
+   },
+   {
+    "title": "Hồ sơ vay đối với cá nhân",
+    "items": [
+     "Chứng Minh Nhân Dân và Hộ khẩu.",
+     "Giấy chứng nhận độc thân hoặc Giấy chứng nhận đăng ký kết hôn.",
+     "Những giấy tờ chứng minh thu nhập:",
+     "Giấy xác nhận mức lương và hợp đồng lao động, sổ tiết kiệm, tài khoản cá nhân. Hợp đồng cho thuê nhà, cho thuê xe, cho thuê xưởng, giấy góp vốn, cổ phần, cổ phiếu, trái phiếu.",
+     "Giấy tờ xác nhận sở hữu tài sản có giá trị: bất động sản, các loại xe ô tô, máy móc, dây chuyền nhà máy, nhà xưởng…",
+     "Nếu cá nhân có công ty riêng mà thu nhập chủ yếu từ công ty thì cần thêm: giấy phép kinh doanh, báo cáo thuế, báo cáo tài chính, bảng lương, bảng chia lợi nhuận từ công ty.",
+     "(Trong trường hợp cá nhân không đủ điều kiện vay Ngân hàng, có thể nhờ người thân có khả năng và thu nhập tốt làm giấy bảo lãnh cho Ngân hàng thẩm định)."
+    ]
+   },
+   {
+    "title": "Hồ sơ vay đối với doanh nghiệp",
+    "items": [
+     "Giấy phép kinh doanh.",
+     "Mã số thuế.",
+     "Giấy bổ nhiệm Giám đốc, bổ nhiệm Kế toán trưởng.",
+     "Giấy đăng ký sử dụng mẫu dấu.",
+     "Báo cáo thuế một năm (hoặc 6 tháng) gần nhất.",
+     "Báo cáo hóa đơn VAT một năm (hoặc 6 tháng) gần nhất.",
+     "Báo cáo tài chính một năm (hoặc 6 tháng) gần nhất.",
+     "Hợp đồng kinh tế đầu ra, đầu vào."
+    ]
+   }
+  ]
+ },
+ "testdrive": {
+  "slug": "dang-ky-lai-thu",
+  "title": "Đăng Ký Lái Thử",
+  "seo": {
+   "title": "Đăng Ký Lái Thử Xe VinFast - VinFast Đà Nẵng",
+   "description": "Quý khách hàng có thể đến trực tiếp Showroom để đăng ký lái thử hoặc nếu Quý khách hàng không thể sắp xếp được, chúng tôi sẽ cho nhân viên hỗ trợ lái xe đến tận nhà phục vụ Quý khách hàng."
+  },
+  "image": "/uploads/2026/06/vinhxdcom_anh-vinfast-da-nang-10.webp",
+  "paragraphs": [
+   "Quý khách hàng có thể đến trực tiếp Showroom để đăng ký lái thử hoặc nếu Quý khách hàng không thể sắp xếp được, chúng tôi sẽ cho nhân viên hỗ trợ lái xe đến tận nhà phục vụ Quý khách hàng.",
+   "Để đăng ký lái thử với đại lý Vinfast vui lòng gọi nhanh qua số qua số Hotline hoặc điền vào mẫu dưới đây và gửi yêu cầu của Quý khách hàng. Chúng tôi sẽ liên hệ lại để hỗ trợ trong vòng 24h."
+  ]
+ },
+ "fees": {
+  "locations": [
+   {
+    "name": "Đà Nẵng",
+    "registrationFee": 1000000
+   }
+  ],
+  "insuranceRate": 1.6,
+  "registrationTaxRate": 0,
+  "fixed": [
+   {
+    "label": "Phí đường bộ",
+    "value": 1560000
+   },
+   {
+    "label": "Đăng Kiểm",
+    "value": 340000
+   },
+   {
+    "label": "Dịch Vụ Đăng Ký",
+    "value": 3000000
+   },
+   {
+    "label": "Bảo Hiểm Bắt Buộc",
+    "value": 943400
+   }
+  ],
+  "loan": {
+   "defaultYears": 5,
+   "defaultRate": 8,
+   "maxRatio": 100
+  },
+  "note": "Giá lăn bánh mang tính chất tham khảo, chưa bao gồm các chương trình khuyến mãi và quà tặng thời điểm hiện tại. Vui lòng liên hệ hotline hoặc để lại thông tin theo form dưới đây để được tư vấn."
+ },
+ "loanPage": {
+  "slug": "tra-gop-xe-vinfast",
+  "title": "Trả Góp Xe VinFast",
+  "seo": {
+   "title": "Trả Góp Xe VinFast - Lãi Suất, Điều Kiện & Hồ Sơ Vay",
+   "description": "Trả góp xe VinFast tại Đà Nẵng: công cụ tính lãi vay, điều kiện vay tới 85% giá trị xe, hồ sơ cần chuẩn bị, quy trình 6 bước và lãi suất tham khảo từ VPBank, Techcombank, Vietcombank."
+  },
+  "requirements": {
+   "title": "Điều kiện vay mua xe",
+   "subtitle": "Cá nhân & doanh nghiệp",
+   "items": [
+    "Công dân Việt Nam từ 20 – 65 tuổi, có năng lực hành vi dân sự đầy đủ",
+    "Thu nhập ổn định. Khoản trả hàng tháng ≤ 50% thu nhập",
+    "Không có nợ xấu CIC nhóm 3, 4, 5 trong 12 tháng gần nhất",
+    "Hộ khẩu thường trú hoặc KT3 tại tỉnh/thành nơi ngân hàng có chi nhánh",
+    "Vay tới 85% giá trị xe mới; tối đa 70% xe cũ (tùy ngân hàng)",
+    "Tài sản đảm bảo là chính xe mua – không cần thế chấp thêm"
+   ],
+   "note": "Một số ngân hàng yêu cầu người đồng bảo lãnh nếu thu nhập chưa đủ. Lãi suất thực tế có thể thay đổi theo từng kỳ – liên hệ tư vấn viên để nhận báo giá chính xác."
+  },
+  "documents": {
+   "title": "Hồ sơ cần chuẩn bị",
+   "subtitle": "Bản photo công chứng hoặc bản gốc",
+   "groups": [
+    {
+     "title": "Giấy tờ cá nhân",
+     "badge": "Bắt buộc",
+     "items": [
+      "CMND/CCCD (2 mặt) – photo công chứng",
+      "Hộ khẩu thường trú hoặc KT3 còn hiệu lực",
+      "Giấy đăng ký kết hôn / xác nhận độc thân (nếu có)"
+     ]
+    },
+    {
+     "title": "Chứng minh thu nhập",
+     "badge": "Bắt buộc",
+     "items": [
+      "Hợp đồng lao động + sao kê lương 3–6 tháng gần nhất",
+      "Hoặc: Giấy tờ kinh doanh (ĐKKD, hợp đồng, hóa đơn…)",
+      "Hoặc: Sổ tiết kiệm / hợp đồng cho thuê tài sản"
+     ]
+    },
+    {
+     "title": "Hồ sơ xe",
+     "badge": "Bắt buộc",
+     "items": [
+      "Hợp đồng mua bán / Báo giá chính hãng từ đại lý",
+      "Hóa đơn VAT hoặc giấy hẹn giao xe (bản dự kiến)"
+     ]
+    },
+    {
+     "title": "Doanh nghiệp",
+     "badge": "Vay theo pháp nhân",
+     "items": [
+      "Giấy chứng nhận ĐKKD còn hiệu lực",
+      "Báo cáo tài chính 2 năm gần nhất (có kiểm toán)",
+      "CMND/CCCD người đại diện pháp luật"
+     ]
+    }
+   ]
+  },
+  "process": {
+   "title": "Quy trình vay mua xe trả góp",
+   "subtitle": "6 bước – hoàn tất trong 2–5 ngày làm việc",
+   "steps": [
+    {
+     "title": "Tư vấn & chọn xe",
+     "text": "Liên hệ đại lý để chọn mẫu xe, phiên bản phù hợp và nhận báo giá chi tiết."
+    },
+    {
+     "title": "Chọn gói tài chính",
+     "text": "Tư vấn viên hỗ trợ tính toán tỷ lệ vay, kỳ hạn, lãi suất phù hợp thu nhập."
+    },
+    {
+     "title": "Nộp hồ sơ tín dụng",
+     "text": "Chuẩn bị và nộp đầy đủ hồ sơ tại đại lý hoặc chi nhánh ngân hàng đối tác."
+    },
+    {
+     "title": "Thẩm định & phê duyệt",
+     "text": "Ngân hàng thẩm định trong 1–3 ngày làm việc. Trường hợp nhanh có thể nhận kết quả trong 24 giờ."
+    },
+    {
+     "title": "Ký hợp đồng vay & mua xe",
+     "text": "Ký hợp đồng tín dụng tại ngân hàng, ký hợp đồng mua bán với đại lý, đóng vốn tự có."
+    },
+    {
+     "title": "Nhận xe & đăng ký biển số",
+     "text": "Ngân hàng giải ngân thẳng vào đại lý. Đại lý tiến hành đăng ký biển số và bàn giao xe."
+    }
+   ]
+  },
+  "banks": {
+   "title": "Ngân hàng đối tác & lưu ý",
+   "subtitle": "Lãi suất tham khảo – cập nhật định kỳ",
+   "items": [
+    {
+     "name": "VPBank",
+     "text": "Từ 7.9%/năm – tỷ lệ vay tới 85%, thủ tục nhanh"
+    },
+    {
+     "name": "Techcombank",
+     "text": "Từ 8.2%/năm – duyệt online, giải ngân nhanh"
+    },
+    {
+     "name": "Vietcombank",
+     "text": "Từ 8.5%/năm – uy tín, phổ biến toàn quốc"
+    },
+    {
+     "name": "BIDV / Agribank",
+     "text": "Từ 8.5–9%/năm – hỗ trợ khách vùng nông thôn"
+    },
+    {
+     "name": "Shinhan / Mirae Asset",
+     "text": "Xét duyệt linh hoạt, phù hợp thu nhập đa dạng"
+    }
+   ],
+   "warnings": {
+    "title": "Lưu ý khi vay",
+    "items": [
+     "Lãi suất có thể thay đổi sau thời gian ưu đãi (thường 6–12 tháng đầu)",
+     "Phí trả trước hạn dao động 1–3% dư nợ còn lại tùy ngân hàng",
+     "Cần mua bảo hiểm thân vỏ trong suốt thời gian vay (bắt buộc)",
+     "Đăng ký tín dụng ảnh hưởng điểm CIC – chỉ nộp hồ sơ khi đã quyết định"
+    ]
+   },
+   "support": "Đội ngũ tư vấn tài chính của đại lý sẽ giúp bạn chọn ngân hàng phù hợp, chuẩn bị hồ sơ và theo dõi tiến trình duyệt vay – hoàn toàn không mất phí."
+  },
+  "cta": {
+   "title": "Sẵn sàng mua xe trả góp?",
+   "text": "Liên hệ ngay để được tư vấn gói tài chính tốt nhất và hỗ trợ làm hồ sơ miễn phí."
+  }
+ }
+}
