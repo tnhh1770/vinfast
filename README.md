@@ -244,7 +244,7 @@ Giá sau ưu đãi    = tổng dự toán − tổng ưu đãi + tùy chọn th�
 
 ## 8. Ghi chú triển khai
 
-- Đổi `NEXT_PUBLIC_SITE_URL` sang domain thật trước khi build (ảnh hưởng canonical, OG, sitemap).
+- Đổi `PUBLIC_SITE_URL` sang domain thật trước khi build (ảnh hưởng canonical, OG, sitemap).
 - **Đặt `JWT_SECRET` trước khi chạy production** — nếu không, hệ thống dùng khoá mặc định
   nằm trong mã nguồn và bất kỳ ai đọc được repo cũng tự ký được cookie quản trị.
 - Thay số hotline / email / địa chỉ tại `src/data/site.json`.

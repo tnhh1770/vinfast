@@ -10,7 +10,7 @@ export const loanContent = siteData.loanPage;
 export const feeConfig = siteData.fees as FeeConfig;
 
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || site.url
+  process.env.PUBLIC_SITE_URL || site.url
 ).replace(/\/$/, "");
 
 export const PHONE_HREF = `tel:${site.hotlineRaw}`;
