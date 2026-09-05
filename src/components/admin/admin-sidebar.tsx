@@ -45,6 +45,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
   ];
 
   const otherNavItems = [
+    { title: "API Console Tester", href: "/admin/api-console", icon: Search },
     { title: "Search", href: "/admin/search", icon: Search },
     { title: "Settings", href: "/admin/settings", icon: Settings },
     { title: "Help Center", href: "/admin/help", icon: HelpCircle },

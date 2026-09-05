@@ -1,22 +1,13 @@
 import "server-only";
 import { getCrmSettings } from "@/lib/crm-db";
-import { SettingsClient, type CrmSettingsData } from "@/components/admin/settings-client";
+import SettingsClient from "./SettingsClient";
 
 export const metadata = {
-  title: "Settings — CarEmpire CRM",
+  title: "Cài Đặt CRM Settings — CarEmpire CRM",
 };
 
 export default async function AdminSettingsPage() {
-  const initialSettings = (await getCrmSettings()) as CrmSettingsData;
+  const settings = (await getCrmSettings()) as Record<string, unknown>;
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Cấu hình Hệ thống CRM (MongoDB)</h1>
-        <p className="text-xs text-slate-400 mt-0.5">Lưu trữ và đọc cấu hình trực tiếp từ CSDL MongoDB</p>
-      </div>
-
-      <SettingsClient initialSettings={initialSettings} />
-    </div>
-  );
+  return <SettingsClient initialSettings={settings} />;
 }

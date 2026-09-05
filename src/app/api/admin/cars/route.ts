@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import CarModel from "@/lib/models/Car";
-import { MOCK_AVAILABLE_CARS } from "@/lib/mock-crm-data";
 
 export async function GET() {
   const user = await getSessionUser();
@@ -10,14 +9,9 @@ export async function GET() {
     return NextResponse.json({ success: false, message: "Unauthenticated" }, { status: 401 });
   }
 
-  const conn = await connectToDatabase();
-  let cars = MOCK_AVAILABLE_CARS;
-  if (conn) {
-    const docs = await CarModel.find({}).lean();
-    if (docs.length > 0) cars = JSON.parse(JSON.stringify(docs));
-  }
-
-  return NextResponse.json({ success: true, data: cars });
+  await connectToDatabase();
+  const docs = await CarModel.find({}).lean();
+  return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(docs)) });
 }
 
 export async function POST(request: Request) {
@@ -28,14 +22,20 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const conn = await connectToDatabase();
-    if (conn) {
-      const newCar = await CarModel.create(body);
-      return NextResponse.json({ success: true, data: newCar });
+    await connectToDatabase();
+
+    if (!body.name || !body.slug) {
+      return NextResponse.json({ success: false, message: "Vui lòng điền Tên xe và Slug." }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true, data: { ...body, id: `car-${Date.now()}` } });
-  } catch {
-    return NextResponse.json({ success: false, message: "Tạo xe mới thất bại." }, { status: 500 });
+    const newCar = await CarModel.create({
+      ...body,
+      price: Number(body.price) || 0,
+    });
+
+    return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(newCar)) });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return NextResponse.json({ success: false, message: err.message || "Tạo xe mới thất bại." }, { status: 500 });
   }
 }

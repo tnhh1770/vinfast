@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import BidModel from "@/lib/models/Bid";
-import { MOCK_BIDS } from "@/lib/mock-crm-data";
 
 export async function GET() {
   const user = await getSessionUser();
@@ -10,12 +9,38 @@ export async function GET() {
     return NextResponse.json({ success: false, message: "Unauthenticated" }, { status: 401 });
   }
 
-  const conn = await connectToDatabase();
-  let bids = MOCK_BIDS;
-  if (conn) {
-    const docs = await BidModel.find({}).sort({ createdAt: -1 }).lean();
-    if (docs.length > 0) bids = JSON.parse(JSON.stringify(docs));
+  await connectToDatabase();
+  const docs = await BidModel.find({}).sort({ createdAt: -1 }).lean();
+  return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(docs)) });
+}
+
+export async function POST(request: Request) {
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ success: false, message: "Unauthenticated" }, { status: 401 });
   }
 
-  return NextResponse.json({ success: true, data: bids });
+  try {
+    const body = await request.json();
+    await connectToDatabase();
+
+    const price = Number(body.currentBid) || 900000000;
+    const newBid = await BidModel.create({
+      carName: body.carName || "VinFast VF 8",
+      startingPrice: price,
+      currentBid: price,
+      image: body.image || "/uploads/vf8.jpg",
+      location: body.location || "Đà Nẵng",
+      style: body.style || "VF Electric",
+      color: "Light Green",
+      kaos: "850 KAOS",
+      speed: "180 Speed: 15.6km/h",
+      status: "Active",
+    });
+
+    return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(newBid)) });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return NextResponse.json({ success: false, message: err.message || "Tạo phiên đấu giá thất bại." }, { status: 500 });
+  }
 }

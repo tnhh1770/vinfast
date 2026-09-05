@@ -7,7 +7,7 @@ import {
   getCrmTransactions,
   getCrmLeads,
 } from "@/lib/crm-db";
-import { Download, Calendar as CalendarIcon, Clock, ArrowUpRight, Car } from "lucide-react";
+import { Download, Calendar as CalendarIcon, ArrowUpRight, Car, Plus, Terminal, Gavel, Briefcase, Navigation } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -15,7 +15,6 @@ export const metadata = {
 };
 
 export default async function AdminDashboardPage() {
-  const user = await getSessionUser();
   const cars = await getCrmCars();
   const deals = await getCrmDeals();
   const transactions = await getCrmTransactions();
@@ -55,11 +54,11 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
 
-        {/* Filter Bar */}
+        {/* Filter Bar & Export */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-300">
             <CalendarIcon className="h-3.5 w-3.5 text-blue-400" />
-            <span>05-Sep-2026 — Realtime DB</span>
+            <span>Realtime DB VinFast Đà Nẵng</span>
           </div>
 
           <a
@@ -68,8 +67,64 @@ export default async function AdminDashboardPage() {
             className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition-all"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Export API ↓</span>
+            <span>Export Stats API ↓</span>
           </a>
+        </div>
+      </div>
+
+      {/* Quick Action Control Panel for Endpoints */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-xl backdrop-blur-sm">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-3">
+          Cổng Thao Tác Nhanh Endpoint & Dữ Liệu CSDL
+        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/listing"
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 transition-all"
+          >
+            <Plus className="h-4 w-4" />
+            <span>+ Thêm Xe Mới (Cars API)</span>
+          </Link>
+
+          <Link
+            href="/admin/deals"
+            className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition-all"
+          >
+            <Briefcase className="h-4 w-4" />
+            <span>+ Tạo Hợp Đồng (Deals API)</span>
+          </Link>
+
+          <Link
+            href="/admin/active-bids"
+            className="flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500 transition-all"
+          >
+            <Gavel className="h-4 w-4" />
+            <span>+ Đấu Giá Mới (Bids API)</span>
+          </Link>
+
+          <Link
+            href="/admin/calendar"
+            className="flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-amber-600/20 hover:bg-amber-500 transition-all"
+          >
+            <CalendarIcon className="h-4 w-4" />
+            <span>+ Thêm Lịch Hẹn (Calendar API)</span>
+          </Link>
+
+          <Link
+            href="/admin/tracking"
+            className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 transition-all"
+          >
+            <Navigation className="h-4 w-4" />
+            <span>+ Thêm Lead (Tracking API)</span>
+          </Link>
+
+          <Link
+            href="/admin/api-console"
+            className="flex items-center gap-2 rounded-xl border border-blue-500/40 bg-blue-950 px-4 py-2 text-xs font-bold text-blue-300 shadow-lg hover:bg-blue-900 transition-all"
+          >
+            <Terminal className="h-4 w-4 text-blue-400" />
+            <span>🧪 API Console Tester (Thử Nghiệm API Direct)</span>
+          </Link>
         </div>
       </div>
 
@@ -148,7 +203,7 @@ export default async function AdminDashboardPage() {
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600/20 border border-blue-500/30 font-bold text-blue-400">
-                    {act.user.charAt(0)}
+                    {act.user ? act.user.charAt(0) : "K"}
                   </div>
                   <div>
                     <h4 className="font-bold text-xs text-white">{act.user}</h4>

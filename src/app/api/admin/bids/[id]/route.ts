@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import TransactionModel from "@/lib/models/Transaction";
+import BidModel from "@/lib/models/Bid";
 
 export async function PUT(
   request: Request,
@@ -17,11 +17,15 @@ export async function PUT(
     const body = await request.json();
     await connectToDatabase();
 
-    const updated = await TransactionModel.findByIdAndUpdate(id, { $set: body }, { new: true }).lean();
+    const updated = await BidModel.findByIdAndUpdate(id, { $set: body }, { new: true }).lean();
+    if (!updated) {
+      return NextResponse.json({ success: false, message: "Không tìm thấy phiên đấu giá." }, { status: 404 });
+    }
+
     return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(updated)) });
   } catch (error: unknown) {
     const err = error as Error;
-    return NextResponse.json({ success: false, message: err.message || "Cập nhật giao dịch thất bại." }, { status: 500 });
+    return NextResponse.json({ success: false, message: err.message || "Cập nhật đấu giá thất bại." }, { status: 500 });
   }
 }
 
@@ -38,10 +42,10 @@ export async function DELETE(
     const { id } = await params;
     await connectToDatabase();
 
-    await TransactionModel.findByIdAndDelete(id);
-    return NextResponse.json({ success: true, message: "Đã xóa giao dịch thành công." });
+    await BidModel.findByIdAndDelete(id);
+    return NextResponse.json({ success: true, message: "Đã xóa phiên đấu giá thành công." });
   } catch (error: unknown) {
     const err = error as Error;
-    return NextResponse.json({ success: false, message: err.message || "Xóa giao dịch thất bại." }, { status: 500 });
+    return NextResponse.json({ success: false, message: err.message || "Xóa đấu giá thất bại." }, { status: 500 });
   }
 }
