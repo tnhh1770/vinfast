@@ -39,6 +39,7 @@ export interface CarSection {
 }
 
 export interface Car {
+  _id?: string;
   slug: string;
   name: string;
   metaTitle: string;
@@ -90,15 +91,47 @@ export interface StaticPage {
   blocks: ContentBlock[];
 }
 
+export type LeadStatus =
+  | "new"
+  | "contacted"
+  | "test_drive"
+  | "negotiating"
+  | "won"
+  | "lost";
+
+export type LeadPriority = "low" | "medium" | "high" | "urgent";
+
+export interface LeadNote {
+  id?: string;
+  content: string;
+  author: string;
+  createdAt: string | Date;
+}
+
 export interface Lead {
+  _id?: string;
   name: string;
   phone: string;
   carInterest?: string;
   message?: string;
   source: string;
   path?: string;
+  status?: LeadStatus;
+  priority?: LeadPriority;
+  assignedTo?: string;
+  notes?: LeadNote[];
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+}
+
+export interface AdminUser {
+  _id?: string;
+  email: string;
+  name: string;
+  role: "admin" | "sales";
   createdAt?: string | Date;
 }
+
 
 export interface FeeConfig {
   locations: { name: string; registrationFee: number }[];

@@ -2,6 +2,7 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["192.168.110.7", "192.168.*"],
   turbopack: { root: path.resolve(process.cwd()) },
   // Giữ nguyên dạng URL có dấu "/" ở cuối như bản gốc để không mất SEO.
   trailingSlash: true,

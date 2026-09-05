@@ -2,9 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import { Toaster } from "sonner";
 
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { FloatingCta } from "@/components/layout/floating-cta";
 import { JsonLd } from "@/components/shared/json-ld";
 import { SITE_URL, site } from "@/lib/site";
 import { graph, organizationSchema, websiteSchema } from "@/lib/seo";
@@ -59,7 +56,7 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi" className={`${beVietnam.variable} h-full antialiased`}>
       <head>
@@ -67,21 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
       </head>
       <body className="flex min-h-full flex-col bg-background text-ink">
-        <a
-          href="#noi-dung-chinh"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
-        >
-          Bỏ qua và tới nội dung chính
-        </a>
-
-        <SiteHeader />
-
-        <main id="noi-dung-chinh" className="flex-1 pb-20 md:pb-0">
-          {children}
-        </main>
-
-        <SiteFooter />
-        <FloatingCta />
+        {children}
         <Toaster position="top-center" richColors closeButton />
         <JsonLd data={graph(organizationSchema(), websiteSchema())} />
       </body>
