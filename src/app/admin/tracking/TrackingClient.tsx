@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, CheckCircle2, AlertTriangle, X } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, X } from "lucide-react";
 import type { ITracking } from "@/lib/models/Tracking";
+import { TRACKING_STATUS, labelOf } from "@/lib/crm-labels";
+import { adminFetch, notify, readJson } from "@/lib/admin-api";
 
 interface TrackingClientProps {
   initialTrackings: ITracking[];
@@ -14,7 +16,6 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
   const [deletingTracking, setDeletingTracking] = useState<ITracking | null>(null);
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [formData, setFormData] = useState({
     name: "Nguyễn Văn H",
@@ -27,25 +28,25 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     try {
-      const res = await fetch("/api/admin/tracking", {
+      const res = await adminFetch("/api/admin/tracking/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setTrackings((prev) => [data.data, ...prev]);
         setIsAddOpen(false);
-        setMessage({ type: "success", text: `Đã tạo tracking lead cho ${data.data.customerName}!` });
+        notify({ type: "success", text: `Đã tạo tracking lead cho ${data.data.customerName}!` });
       } else {
-        setMessage({ type: "error", text: data.message || "Tạo tracking thất bại." });
+        notify({ type: "error", text: data.message || "Tạo tracking thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -56,19 +57,19 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
     const newStatus = trk.status === "Delivered" ? "In Transit" : "Delivered";
 
     try {
-      const res = await fetch(`/api/admin/tracking/${trk._id}`, {
+      const res = await adminFetch(`/api/admin/tracking/${trk._id}/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success) {
         setTrackings((prev) => prev.map((t) => (t._id === trk._id ? { ...t, status: newStatus } : t)));
-        setMessage({ type: "success", text: `Đã cập nhật trạng thái tracking sang ${newStatus}!` });
+        notify({ type: "success", text: `Đã cập nhật trạng thái tracking sang ${newStatus}!` });
       }
     } catch {
-      setMessage({ type: "error", text: "Cập nhật thất bại." });
+      notify({ type: "error", text: "Cập nhật thất bại." });
     } finally {
       setLoading(false);
     }
@@ -79,20 +80,20 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/admin/tracking/${deletingTracking._id}`, {
+      const res = await adminFetch(`/api/admin/tracking/${deletingTracking._id}/`, {
         method: "DELETE",
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success) {
         setTrackings((prev) => prev.filter((t) => t._id !== deletingTracking._id));
-        setMessage({ type: "success", text: "Đã xóa tracking khỏi CSDL MongoDB." });
+        notify({ type: "success", text: "Đã xóa tracking khỏi CSDL MongoDB." });
         setDeletingTracking(null);
       } else {
-        setMessage({ type: "error", text: data.message || "Xóa thất bại." });
+        notify({ type: "error", text: data.message || "Xóa thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -100,29 +101,10 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
 
   return (
     <div className="space-y-6">
-      {/* Toast */}
-      {message && (
-        <div
-          className={`flex items-center justify-between rounded-xl p-4 text-xs font-medium border shadow-lg ${
-            message.type === "success"
-              ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-300"
-              : "bg-rose-950/80 border-rose-500/40 text-rose-300"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{message.text}</span>
-          </div>
-          <button onClick={() => setMessage(null)} className="text-slate-400 hover:text-white">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Tracking / Lead Theo Dõi (MongoDB)</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Theo dõi giao xe</h1>
           <p className="text-xs text-slate-400 mt-0.5">
             Tổng cộng <strong className="text-blue-400 font-semibold">{trackings.length} khách hàng lead</strong> theo dõi vận chuyển xe
           </p>
@@ -133,12 +115,18 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
           className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition-all cursor-pointer"
         >
           <Plus className="h-4 w-4" />
-          <span>+ Thêm Lead Tracking Mới</span>
+          <span>Thêm bản ghi giao xe</span>
         </button>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {trackings.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-500">
+            Chưa có bản ghi theo dõi giao xe nào.
+          </div>
+        )}
+
         {trackings.map((trk) => (
           <div
             key={String(trk._id)}
@@ -159,6 +147,7 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
               </div>
 
               <div className="my-4 flex h-32 items-center justify-center rounded-xl bg-slate-950/80 p-2 border border-slate-800/60 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element -- ảnh xem trước trong CRM, không ảnh hưởng LCP trang public */}
                 <img
                   src={trk.carImage || "/uploads/vf8.jpg"}
                   alt={trk.customerName}
@@ -172,13 +161,11 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
 
               <button
                 onClick={() => handleToggleStatus(trk)}
-                className={`rounded-lg px-2.5 py-1 text-[10px] font-bold border transition-all cursor-pointer ${
-                  trk.status === "Delivered"
-                    ? "bg-emerald-950 text-emerald-300 border-emerald-800/50"
-                    : "bg-blue-950 text-blue-300 border-blue-800/50"
+                className={`cursor-pointer rounded-lg border px-2.5 py-1 text-[10px] font-bold transition-all ${
+                  labelOf(TRACKING_STATUS, trk.status).className
                 }`}
               >
-                {trk.status || "In Transit"}
+                {labelOf(TRACKING_STATUS, trk.status).label}
               </button>
             </div>
           </div>
@@ -192,7 +179,7 @@ export default function TrackingClient({ initialTrackings }: TrackingClientProps
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Plus className="h-5 w-5 text-emerald-400" />
-                <span>Thêm Tracking Lead Mới</span>
+                <span>Thêm bản ghi giao xe</span>
               </h3>
               <button onClick={() => setIsAddOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="h-5 w-5" />

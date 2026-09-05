@@ -3,6 +3,7 @@ import { getSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import CarModel from "@/lib/models/Car";
 import mongoose from "mongoose";
+import { revalidateCarPages } from "@/lib/revalidate";
 
 function isValidObjectId(id: string) {
   return mongoose.Types.ObjectId.isValid(id);
@@ -63,6 +64,8 @@ export async function PUT(
       return NextResponse.json({ success: false, message: "Không tìm thấy xe để cập nhật." }, { status: 404 });
     }
 
+    revalidateCarPages((updated as { slug?: string }).slug);
+
     return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(updated)) });
   } catch (error: unknown) {
     const err = error as Error;
@@ -93,6 +96,8 @@ export async function DELETE(
     if (!deleted) {
       return NextResponse.json({ success: false, message: "Không tìm thấy xe để xóa." }, { status: 404 });
     }
+
+    revalidateCarPages((deleted as { slug?: string }).slug);
 
     return NextResponse.json({ success: true, message: "Đã xóa xe thành công." });
   } catch (error: unknown) {

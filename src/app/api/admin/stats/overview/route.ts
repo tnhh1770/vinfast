@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
-import { MOCK_AVAILABLE_CARS, MOCK_RECENT_ACTIVITIES } from "@/lib/mock-crm-data";
+import { getCrmOverview, getRecentActivity } from "@/lib/crm-stats";
 
 export async function GET() {
   const user = await getSessionUser();
@@ -8,17 +8,11 @@ export async function GET() {
     return NextResponse.json({ success: false, message: "Unauthenticated" }, { status: 401 });
   }
 
+  const [overview, recentActivity] = await Promise.all([getCrmOverview(), getRecentActivity()]);
+
   return NextResponse.json({
     success: true,
-    data: {
-      stats7Days: {
-        availableCarsCount: MOCK_AVAILABLE_CARS.length,
-        totalBids: 47,
-        totalDeals: 148,
-        totalRevenueUsd: 1285892,
-      },
-      availableCars: MOCK_AVAILABLE_CARS,
-      recentActivity: MOCK_RECENT_ACTIVITIES,
-    },
+    generatedAt: new Date().toISOString(),
+    data: { ...overview, recentActivity },
   });
 }

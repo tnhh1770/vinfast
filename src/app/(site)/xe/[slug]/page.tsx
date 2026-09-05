@@ -74,8 +74,11 @@ export default async function CarDetailPage({ params }: PageProps<"/xe/[slug]">)
 
   if (!car) notFound();
 
-  const overview = car.sections.overview;
-  const gallerySection = car.sections.gallery;
+  // Xe thêm mới từ CRM chưa có nội dung chi tiết -> mặc định rỗng để trang
+  // vẫn render (và `next build` không đổ) thay vì crash.
+  const sections = car.sections ?? {};
+  const overview = sections.overview;
+  const gallerySection = sections.gallery;
   const galleryImages =
     (gallerySection?.blocks.filter(
       (block): block is Extract<ContentBlock, { type: "image" }> =>
@@ -83,7 +86,7 @@ export default async function CarDetailPage({ params }: PageProps<"/xe/[slug]">)
     ) ?? []).map((block) => ({ src: block.src, alt: block.alt }));
 
   const availableAnchors = SECTION_ANCHORS.filter(
-    ({ key }) => car.sections[key]?.blocks.length,
+    ({ key }) => sections[key]?.blocks.length,
   ).map(({ id }) => id);
   if (galleryImages.length) availableAnchors.push("anh");
 
@@ -198,7 +201,7 @@ export default async function CarDetailPage({ params }: PageProps<"/xe/[slug]">)
           ) : null}
 
           {SECTION_ANCHORS.map(({ key, id }) => {
-            const section = car.sections[key];
+            const section = sections[key];
             if (!section?.blocks.length) return null;
             return (
               <section key={id} id={id} className="mt-12">

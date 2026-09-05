@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Filter, Download, ArrowUpRight, Plus, Edit3, Trash2, Search, X, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Filter, Download, ArrowUpRight, Plus, Edit3, Trash2, Search, X, AlertTriangle } from "lucide-react";
 import type { Car } from "@/types";
+import { adminFetch, notify, readJson } from "@/lib/admin-api";
 
 interface ListingClientProps {
   initialCars: Car[];
@@ -31,7 +32,6 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const categories = ["ALL", ...Array.from(new Set(cars.map((c) => c.category).filter(Boolean)))];
 
@@ -89,25 +89,25 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     try {
-      const res = await fetch("/api/admin/cars", {
+      const res = await adminFetch("/api/admin/cars/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setCars((prev) => [data.data, ...prev]);
         setIsAddModalOpen(false);
-        setMessage({ type: "success", text: `Đã thêm xe "${data.data.name}" thành công!` });
+        notify({ type: "success", text: `Đã thêm xe "${data.data.name}" thành công!` });
       } else {
-        setMessage({ type: "error", text: data.message || "Thêm xe thất bại." });
+        notify({ type: "error", text: data.message || "Thêm xe thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -117,29 +117,29 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
     e.preventDefault();
     if (!editingCar) return;
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     const carId = editingCar.slug || editingCar._id;
 
     try {
-      const res = await fetch(`/api/admin/cars/${carId}`, {
+      const res = await adminFetch(`/api/admin/cars/${carId}/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setCars((prev) =>
           prev.map((c) => (c._id === editingCar._id || c.slug === editingCar.slug ? { ...c, ...data.data } : c))
         );
         setEditingCar(null);
-        setMessage({ type: "success", text: `Đã cập nhật xe "${data.data.name}" vào MongoDB!` });
+        notify({ type: "success", text: `Đã cập nhật xe "${data.data.name}" vào MongoDB!` });
       } else {
-        setMessage({ type: "error", text: data.message || "Cập nhật xe thất bại." });
+        notify({ type: "error", text: data.message || "Cập nhật xe thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -148,25 +148,25 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
   const handleDeleteConfirm = async () => {
     if (!deletingCar) return;
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     const carId = deletingCar.slug || deletingCar._id;
 
     try {
-      const res = await fetch(`/api/admin/cars/${carId}`, {
+      const res = await adminFetch(`/api/admin/cars/${carId}/`, {
         method: "DELETE",
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success) {
         setCars((prev) => prev.filter((c) => c._id !== deletingCar._id && c.slug !== deletingCar.slug));
-        setMessage({ type: "success", text: `Đã xóa xe "${deletingCar.name}" khỏi MongoDB.` });
+        notify({ type: "success", text: `Đã xóa xe "${deletingCar.name}" khỏi MongoDB.` });
         setDeletingCar(null);
       } else {
-        setMessage({ type: "error", text: data.message || "Xóa xe thất bại." });
+        notify({ type: "error", text: data.message || "Xóa xe thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ khi xóa xe." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ khi xóa xe." });
     } finally {
       setLoading(false);
     }
@@ -175,28 +175,10 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
   return (
     <div className="space-y-6">
       {/* Toast notification */}
-      {message && (
-        <div
-          className={`flex items-center justify-between rounded-xl p-4 text-xs font-medium border shadow-lg transition-all ${
-            message.type === "success"
-              ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-300"
-              : "bg-rose-950/80 border-rose-500/40 text-rose-300"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {message.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
-            <span>{message.text}</span>
-          </div>
-          <button onClick={() => setMessage(null)} className="text-slate-400 hover:text-white">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {/* Header controls */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Quản Lý Danh Sách Xe (MongoDB)</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Kho xe</h1>
           <p className="text-xs text-slate-400 mt-0.5">
             Tổng cộng <strong className="text-blue-400 font-semibold">{cars.length} dòng xe</strong> trong hệ thống. Bạn có thể Thêm mới, Sửa hoặc Xóa trực tiếp vào Database.
           </p>
@@ -212,12 +194,12 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
           </button>
 
           <a
-            href="/api/admin/cars"
+            href="/api/admin/cars/"
             target="_blank"
             className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Export JSON</span>
+            <span>Xuất JSON</span>
           </a>
         </div>
       </div>
@@ -255,6 +237,14 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
 
       {/* Grid of Real Cars from MongoDB */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCars.length === 0 && (
+          <div className="col-span-full rounded-2xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-500">
+            {cars.length === 0
+              ? "Kho xe đang trống. Bấm “Thêm xe mới” hoặc chạy `npm run seed`."
+              : "Không có xe nào khớp bộ lọc hiện tại."}
+          </div>
+        )}
+
         {filteredCars.map((car) => (
           <div
             key={car.slug || String(car._id)}
@@ -304,6 +294,7 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
 
               {/* Car Photo */}
               <div className="my-4 flex h-36 items-center justify-center rounded-xl bg-slate-950/80 p-2 border border-slate-800/60 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element -- ảnh xem trước trong CRM, không ảnh hưởng LCP trang public */}
                 <img
                   src={car.thumbnail || car.heroImage || "/uploads/vf8.jpg"}
                   alt={car.name}
@@ -376,7 +367,7 @@ export default function ListingClient({ initialCars }: ListingClientProps) {
                   <label className="block text-slate-300 font-semibold mb-1">Phân Khúc</label>
                   <input
                     type="text"
-                    placeholder="Pickup Electric / A-SUV"
+                    placeholder="SUV điện cỡ A"
                     value={formData.category}
                     onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
                     className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"

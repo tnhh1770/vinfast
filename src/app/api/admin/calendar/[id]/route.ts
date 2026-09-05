@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
+import mongoose from "mongoose";
 import CalendarEventModel from "@/lib/models/CalendarEvent";
 
 export async function PUT(
@@ -14,10 +15,25 @@ export async function PUT(
 
   try {
     const { id } = await params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ." }, { status: 400 });
+    }
+
     const body = await request.json();
     await connectToDatabase();
 
-    const updated = await CalendarEventModel.findByIdAndUpdate(id, { $set: body }, { new: true }).lean();
+    const updated = await CalendarEventModel.findByIdAndUpdate(id, { $set: body }, {
+      new: true,
+      runValidators: true,
+    }).lean();
+
+    if (!updated) {
+      return NextResponse.json(
+        { success: false, message: "Không tìm thấy lịch hẹn." },
+        { status: 404 },
+      );
+    }
+
     return NextResponse.json({ success: true, data: JSON.parse(JSON.stringify(updated)) });
   } catch (error: unknown) {
     const err = error as Error;
@@ -36,9 +52,19 @@ export async function DELETE(
 
   try {
     const { id } = await params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ." }, { status: 400 });
+    }
+
     await connectToDatabase();
 
-    await CalendarEventModel.findByIdAndDelete(id);
+    const deleted = await CalendarEventModel.findByIdAndDelete(id);
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, message: "Không tìm thấy lịch hẹn." },
+        { status: 404 },
+      );
+    }
     return NextResponse.json({ success: true, message: "Đã xóa lịch hẹn thành công." });
   } catch (error: unknown) {
     const err = error as Error;

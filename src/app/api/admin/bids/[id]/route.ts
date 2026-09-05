@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import BidModel from "@/lib/models/Bid";
+import mongoose from "mongoose";
 
 export async function PUT(
   request: Request,
@@ -14,6 +15,10 @@ export async function PUT(
 
   try {
     const { id } = await params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ." }, { status: 400 });
+    }
+
     const body = await request.json();
     await connectToDatabase();
 
@@ -40,9 +45,20 @@ export async function DELETE(
 
   try {
     const { id } = await params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ." }, { status: 400 });
+    }
+
     await connectToDatabase();
 
-    await BidModel.findByIdAndDelete(id);
+    const deleted = await BidModel.findByIdAndDelete(id);
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, message: "Không tìm thấy phiên đấu giá." },
+        { status: 404 },
+      );
+    }
+
     return NextResponse.json({ success: true, message: "Đã xóa phiên đấu giá thành công." });
   } catch (error: unknown) {
     const err = error as Error;

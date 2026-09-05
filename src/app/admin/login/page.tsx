@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { loginAdminAction, type LoginState } from "@/app/actions/auth";
 import { Lock, Mail, ShieldAlert, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +12,9 @@ const initialState: LoginState = {
   message: "",
 };
 
-export default function AdminLoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "";
   const [state, formAction, isPending] = useActionState(loginAdminAction, initialState);
 
   return (
@@ -38,6 +42,8 @@ export default function AdminLoginPage() {
 
         {/* Login Form */}
         <form action={formAction} className="space-y-5">
+          <input type="hidden" name="redirect" value={redirectTo} />
+
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
               Email Quản trị
@@ -48,7 +54,7 @@ export default function AdminLoginPage() {
                 type="email"
                 name="email"
                 required
-                defaultValue="admin@vinfastdanang.net"
+                autoComplete="username"
                 placeholder="admin@vinfastdanang.net"
                 className="w-full rounded-xl border border-slate-800 bg-slate-950/80 py-2.5 pl-11 pr-4 text-sm text-white placeholder-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -65,7 +71,7 @@ export default function AdminLoginPage() {
                 type="password"
                 name="password"
                 required
-                defaultValue="admin123"
+                autoComplete="current-password"
                 placeholder="••••••••"
                 className="w-full rounded-xl border border-slate-800 bg-slate-950/80 py-2.5 pl-11 pr-4 text-sm text-white placeholder-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -98,5 +104,19 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-950 text-sm text-slate-400">
+          Đang tải…
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

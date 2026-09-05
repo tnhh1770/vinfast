@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Upload, CheckCircle2, ShoppingBag, ArrowLeft, Edit3, Trash2, X, AlertTriangle } from "lucide-react";
 import type { Car } from "@/types";
+import { adminFetch, notify, readJson } from "@/lib/admin-api";
 
 interface CarDetailClientProps {
   initialCar: Car;
@@ -17,7 +18,6 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [editForm, setEditForm] = useState({
     name: car.name || "",
@@ -30,27 +30,27 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     const carId = car.slug || car._id;
 
     try {
-      const res = await fetch(`/api/admin/cars/${carId}`, {
+      const res = await adminFetch(`/api/admin/cars/${carId}/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setCar(data.data);
         setIsEditOpen(false);
-        setMessage({ type: "success", text: "Đã cập nhật thông tin xe thành công trong MongoDB!" });
+        notify({ type: "success", text: "Đã cập nhật thông tin xe thành công trong MongoDB!" });
       } else {
-        setMessage({ type: "error", text: data.message || "Cập nhật thất bại." });
+        notify({ type: "error", text: data.message || "Cập nhật thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -58,24 +58,24 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
 
   const handleDeleteConfirm = async () => {
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     const carId = car.slug || car._id;
 
     try {
-      const res = await fetch(`/api/admin/cars/${carId}`, {
+      const res = await adminFetch(`/api/admin/cars/${carId}/`, {
         method: "DELETE",
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success) {
         router.push("/admin/listing");
       } else {
-        setMessage({ type: "error", text: data.message || "Xóa xe thất bại." });
+        notify({ type: "error", text: data.message || "Xóa xe thất bại." });
         setIsDeleteOpen(false);
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ khi xóa xe." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ khi xóa xe." });
       setIsDeleteOpen(false);
     } finally {
       setLoading(false);
@@ -85,7 +85,7 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
   const createDeal = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/deals", {
+      const res = await adminFetch("/api/admin/deals/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -97,12 +97,12 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
           salesman: "Trần Văn B (Đà Nẵng)",
         }),
       });
-      const data = await res.json();
+      const data = await readJson(res);
       if (data.success) {
-        setMessage({ type: "success", text: `Đã tạo hợp đồng đặt cọc cho dòng xe ${car.name} thành công!` });
+        notify({ type: "success", text: `Đã tạo hợp đồng đặt cọc cho dòng xe ${car.name} thành công!` });
       }
     } catch {
-      setMessage({ type: "error", text: "Tạo hợp đồng thất bại." });
+      notify({ type: "error", text: "Tạo hợp đồng thất bại." });
     } finally {
       setLoading(false);
     }
@@ -118,24 +118,6 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
   return (
     <div className="space-y-6">
       {/* Toast notification */}
-      {message && (
-        <div
-          className={`flex items-center justify-between rounded-xl p-4 text-xs font-medium border shadow-lg transition-all ${
-            message.type === "success"
-              ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-300"
-              : "bg-rose-950/80 border-rose-500/40 text-rose-300"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{message.text}</span>
-          </div>
-          <button onClick={() => setMessage(null)} className="text-slate-400 hover:text-white">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {/* Header with Navigation & Action Buttons */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -146,7 +128,7 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Chi Tiết Xe: {car.name}</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Chi tiết xe: {car.name}</h1>
             <p className="text-xs text-slate-400 mt-0.5">Dữ liệu thời gian thực truy vấn trực tiếp từ CSDL MongoDB</p>
           </div>
         </div>
@@ -180,6 +162,7 @@ export default function CarDetailClient({ initialCar }: CarDetailClientProps) {
           </div>
 
           <div className="flex h-64 w-full items-center justify-center rounded-2xl bg-slate-950/80 p-4 border border-slate-800/80 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element -- ảnh xem trước trong CRM, không ảnh hưởng LCP trang public */}
             <img
               src={car.heroImage || car.thumbnail || "/uploads/vf8.jpg"}
               alt={car.name}

@@ -1,14 +1,14 @@
 import "server-only";
 import { getCars } from "@/lib/repo";
-import { getSessionUser } from "@/lib/auth";
+import { requireAdminUser } from "@/lib/auth";
 import { CarPricingClient } from "@/components/admin/cars/car-pricing-client";
 
 export const metadata = {
-  title: "Quản lý Bảng giá Xe CRM — VinFast Đà Nẵng",
+  title: "Bảng giá & Ưu đãi — CRM VinFast Đà Nẵng",
 };
 
 export default async function AdminCarsPage() {
-  const user = await getSessionUser();
+  const user = await requireAdminUser();
   const cars = await getCars();
 
   return (

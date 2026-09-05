@@ -17,6 +17,11 @@ export async function loginAdminAction(
   const email = (formData.get("email") as string)?.trim()?.toLowerCase();
   const password = formData.get("password") as string;
 
+  // Chỉ nhận đường dẫn nội bộ để tránh open redirect.
+  const rawRedirect = (formData.get("redirect") as string) || "";
+  const redirectTo =
+    rawRedirect.startsWith("/admin") && !rawRedirect.startsWith("//") ? rawRedirect : "/admin/";
+
   if (!email || !password) {
     return {
       status: "error",
@@ -41,7 +46,7 @@ export async function loginAdminAction(
       } else {
         return {
           status: "error",
-          message: "Email hoặc mật khẩu không chính xác. Dùng admin@vinfastdanang.net / admin123 để thử nghiệm.",
+          message: "Email hoặc mật khẩu không chính xác.",
         };
       }
     } else {
@@ -79,7 +84,7 @@ export async function loginAdminAction(
   }
 
   if (success) {
-    redirect("/admin/");
+    redirect(redirectTo);
   }
 
   return { status: "error", message: "Đăng nhập không thành công." };

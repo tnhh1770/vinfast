@@ -1,19 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  X,
-  Phone,
-  MessageCircle,
-  Clock,
-  UserCheck,
-  Send,
-  Trash2,
-  AlertCircle,
-  Tag,
-  Calendar,
-  Compass,
-} from "lucide-react";
+import { X, Phone, MessageCircle, Clock, UserCheck, Send, Trash2 } from "lucide-react";
 import type { Lead, LeadStatus, LeadPriority } from "@/types";
 import {
   updateLeadStatusAction,
@@ -28,9 +16,15 @@ interface LeadDetailModalProps {
   lead: Lead | null;
   onClose: () => void;
   userRole?: string;
+  salesUsers?: string[];
 }
 
-export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProps) {
+export function LeadDetailModal({
+  lead,
+  onClose,
+  userRole,
+  salesUsers = [],
+}: LeadDetailModalProps) {
   const [newNote, setNewNote] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -43,10 +37,11 @@ export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProp
     if (!lead?._id) return;
     setLoading(true);
     try {
-      await updateLeadStatusAction(lead._id, status);
-      toast.success("Đã cập nhật trạng thái");
+      const result = await updateLeadStatusAction(lead._id, status);
+      if (result.success) toast.success(result.message ?? "Đã cập nhật trạng thái");
+      else toast.error(result.message ?? "Cập nhật thất bại");
     } catch {
-      toast.error("Cập nhật thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -56,10 +51,11 @@ export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProp
     if (!lead?._id) return;
     setLoading(true);
     try {
-      await updateLeadPriorityAction(lead._id, priority);
-      toast.success("Đã cập nhật mức ưu tiên");
+      const result = await updateLeadPriorityAction(lead._id, priority);
+      if (result.success) toast.success(result.message ?? "Đã cập nhật mức ưu tiên");
+      else toast.error(result.message ?? "Cập nhật thất bại");
     } catch {
-      toast.error("Cập nhật thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -70,11 +66,15 @@ export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProp
     if (!lead?._id || !newNote.trim()) return;
     setLoading(true);
     try {
-      await addLeadNoteAction(lead._id, newNote);
-      setNewNote("");
-      toast.success("Đã thêm ghi chú mới");
+      const result = await addLeadNoteAction(lead._id, newNote);
+      if (result.success) {
+        setNewNote("");
+        toast.success(result.message ?? "Đã thêm ghi chú mới");
+      } else {
+        toast.error(result.message ?? "Thêm ghi chú thất bại");
+      }
     } catch {
-      toast.error("Thêm ghi chú thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -84,10 +84,11 @@ export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProp
     if (!lead?._id) return;
     setLoading(true);
     try {
-      await assignLeadAction(lead._id, assignedTo);
-      toast.success(`Đã gán cho Sales ${assignedTo}`);
+      const result = await assignLeadAction(lead._id, assignedTo);
+      if (result.success) toast.success(result.message ?? "Đã gán nhân viên phụ trách");
+      else toast.error(result.message ?? "Gán nhân viên thất bại");
     } catch {
-      toast.error("Gán Sales thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -97,11 +98,15 @@ export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProp
     if (!lead?._id || !confirm("Bạn có chắc chắn muốn xóa lead này không?")) return;
     setLoading(true);
     try {
-      await deleteLeadAction(lead._id);
-      toast.success("Đã xóa Lead");
-      onClose();
+      const result = await deleteLeadAction(lead._id);
+      if (result.success) {
+        toast.success(result.message ?? "Đã xoá khách hàng");
+        onClose();
+      } else {
+        toast.error(result.message ?? "Xoá thất bại");
+      }
     } catch {
-      toast.error("Xóa thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -223,6 +228,35 @@ export function LeadDetailModal({ lead, onClose, userRole }: LeadDetailModalProp
                 <option value="urgent">🔴 Khẩn cấp (Cần chọc ngay)</option>
               </select>
             </div>
+          </div>
+
+          {/* Gán nhân viên chăm sóc */}
+          <div>
+            <label
+              htmlFor="lead-assign"
+              className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-300"
+            >
+              <UserCheck className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Nhân viên phụ trách:</span>
+            </label>
+            <select
+              id="lead-assign"
+              value={lead.assignedTo || ""}
+              disabled={loading}
+              onChange={(e) => handleAssign(e.target.value)}
+              className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none"
+            >
+              <option value="">— Chưa gán —</option>
+              {salesUsers.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+              {/* Giữ lại tên cũ nếu người đó không còn trong danh sách tài khoản. */}
+              {lead.assignedTo && !salesUsers.includes(lead.assignedTo) && (
+                <option value={lead.assignedTo}>{lead.assignedTo} (không còn trong hệ thống)</option>
+              )}
+            </select>
           </div>
 
           {/* Activity Notes Timeline */}

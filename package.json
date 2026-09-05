@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "seed": "node scripts/seed.mjs",
+    "seed:crm": "node scripts/seed-crm.mjs",
     "seed:admin": "node scripts/seed-admin.mjs"
   },
   "dependencies": {

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Gavel, Trash2, Edit3, CheckCircle2, AlertTriangle, X } from "lucide-react";
+import { Plus, Gavel, Trash2, AlertTriangle, X } from "lucide-react";
 import type { IBid } from "@/lib/models/Bid";
+import { BID_STATUS, labelOf } from "@/lib/crm-labels";
+import { adminFetch, notify, readJson } from "@/lib/admin-api";
 
 interface BidsClientProps {
   initialBids: IBid[];
@@ -11,11 +13,9 @@ interface BidsClientProps {
 export default function BidsClient({ initialBids }: BidsClientProps) {
   const [bids, setBids] = useState<IBid[]>(initialBids);
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editingBid, setEditingBid] = useState<IBid | null>(null);
   const [deletingBid, setDeletingBid] = useState<IBid | null>(null);
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [formData, setFormData] = useState({
     carName: "VinFast VF 8 All New",
@@ -29,25 +29,25 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     try {
-      const res = await fetch("/api/admin/bids", {
+      const res = await adminFetch("/api/admin/bids/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setBids((prev) => [data.data, ...prev]);
         setIsAddOpen(false);
-        setMessage({ type: "success", text: `Đã mở phiên đấu giá cho xe ${data.data.carName}!` });
+        notify({ type: "success", text: `Đã mở phiên đấu giá cho xe ${data.data.carName}!` });
       } else {
-        setMessage({ type: "error", text: data.message || "Tạo đấu giá thất bại." });
+        notify({ type: "error", text: data.message || "Tạo đấu giá thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -55,22 +55,54 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
 
   const handlePlaceBid = async (bid: IBid) => {
     setLoading(true);
-    const newAmount = (bid.currentBid || 0) + 10000000;
+    notify(null);
 
     try {
-      const res = await fetch(`/api/admin/bids/${bid._id}`, {
-        method: "PUT",
+      // Endpoint tự tính bước giá tối thiểu và kiểm tra phiên còn mở hay không.
+      const res = await adminFetch(`/api/admin/bids/${bid._id}/place-bid/`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentBid: newAmount }),
+        body: JSON.stringify({}),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
-        setBids((prev) => prev.map((b) => (b._id === bid._id ? { ...b, currentBid: newAmount } : b)));
-        setMessage({ type: "success", text: `Đã nâng giá đấu cho xe ${bid.carName} lên ${newAmount.toLocaleString("vi-VN")} ₫!` });
+        setBids((prev) => prev.map((b) => (b._id === bid._id ? data.data : b)));
+        notify({ type: "success", text: data.message || "Đã nâng giá đấu thành công." });
+      } else {
+        notify({ type: "error", text: data.message || "Đặt mức đấu giá thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi đấu giá." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (bid: IBid) => {
+    setLoading(true);
+    notify(null);
+    const nextStatus = bid.status === "Active" ? "Closed" : "Active";
+
+    try {
+      const res = await adminFetch(`/api/admin/bids/${bid._id}/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      const data = await readJson(res);
+
+      if (data.success && data.data) {
+        setBids((prev) => prev.map((b) => (b._id === bid._id ? data.data : b)));
+        notify({
+          type: "success",
+          text: nextStatus === "Closed" ? "Đã đóng phiên đấu giá." : "Đã mở lại phiên đấu giá.",
+        });
+      } else {
+        notify({ type: "error", text: data.message || "Cập nhật trạng thái thất bại." });
+      }
+    } catch {
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -81,20 +113,20 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/admin/bids/${deletingBid._id}`, {
+      const res = await adminFetch(`/api/admin/bids/${deletingBid._id}/`, {
         method: "DELETE",
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success) {
         setBids((prev) => prev.filter((b) => b._id !== deletingBid._id));
-        setMessage({ type: "success", text: `Đã xóa phiên đấu giá xe ${deletingBid.carName} khỏi MongoDB.` });
+        notify({ type: "success", text: `Đã xóa phiên đấu giá xe ${deletingBid.carName} khỏi MongoDB.` });
         setDeletingBid(null);
       } else {
-        setMessage({ type: "error", text: data.message || "Xóa thất bại." });
+        notify({ type: "error", text: data.message || "Xóa thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -102,31 +134,12 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
 
   return (
     <div className="space-y-6">
-      {/* Toast */}
-      {message && (
-        <div
-          className={`flex items-center justify-between rounded-xl p-4 text-xs font-medium border shadow-lg ${
-            message.type === "success"
-              ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-300"
-              : "bg-rose-950/80 border-rose-500/40 text-rose-300"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{message.text}</span>
-          </div>
-          <button onClick={() => setMessage(null)} className="text-slate-400 hover:text-white">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Active Bids / Sàn Đấu Giá (MongoDB)</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Sàn đấu giá</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Tổng cộng <strong className="text-blue-400 font-semibold">{bids.length} phiên đấu giá</strong> hoạt động trực tiếp trong database
+            <strong className="text-blue-400 font-semibold">{bids.filter((b) => b.status === "Active").length}</strong> phiên đang mở trên tổng số {bids.length} phiên trong cơ sở dữ liệu
           </p>
         </div>
 
@@ -138,6 +151,12 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
           <span>+ Tạo Phiên Đấu Giá Mới</span>
         </button>
       </div>
+
+      {bids.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-slate-800 py-16 text-center text-sm text-slate-500">
+          Chưa có phiên đấu giá nào. Bấm “Tạo Phiên Đấu Giá Mới” để bắt đầu.
+        </div>
+      )}
 
       {/* Grid of Bids */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -156,7 +175,18 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
                 </div>
                 <div className="flex items-center gap-1">
                   <button
+                    onClick={() => handleToggleStatus(bid)}
+                    disabled={loading}
+                    title={bid.status === "Active" ? "Đóng phiên đấu giá" : "Mở lại phiên đấu giá"}
+                    className={`cursor-pointer rounded-lg border px-2 py-1 text-[10px] font-bold transition-all hover:brightness-125 disabled:opacity-50 ${
+                      labelOf(BID_STATUS, bid.status).className
+                    }`}
+                  >
+                    {labelOf(BID_STATUS, bid.status).label}
+                  </button>
+                  <button
                     onClick={() => setDeletingBid(bid)}
+                    title="Xoá phiên đấu giá"
                     className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-rose-600 hover:text-white transition-all cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -165,6 +195,7 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
               </div>
 
               <div className="my-4 flex h-36 items-center justify-center rounded-xl bg-slate-950/80 p-2 border border-slate-800/60 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element -- ảnh xem trước trong CRM, không ảnh hưởng LCP trang public */}
                 <img
                   src={bid.image || "/uploads/vf8.jpg"}
                   alt={bid.carName}
@@ -184,11 +215,12 @@ export default function BidsClient({ initialBids }: BidsClientProps) {
 
               <button
                 onClick={() => handlePlaceBid(bid)}
-                disabled={loading}
-                className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition-all cursor-pointer"
+                disabled={loading || bid.status !== "Active"}
+                title={bid.status === "Active" ? "Nâng giá thêm 10 triệu" : "Phiên đã đóng"}
+                className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40 transition-all cursor-pointer"
               >
                 <Gavel className="h-3.5 w-3.5" />
-                <span>+10Tr Bid Now</span>
+                <span>Nâng giá +10 triệu</span>
               </button>
             </div>
           </div>

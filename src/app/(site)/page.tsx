@@ -15,6 +15,8 @@ import { getCars, getPosts } from "@/lib/repo";
 import { PHONE_HREF, homeContent, site } from "@/lib/site";
 import { buildMetadata, graph, itemListSchema } from "@/lib/seo";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = buildMetadata({
   title: homeContent.seo.title,
   description: homeContent.seo.description,

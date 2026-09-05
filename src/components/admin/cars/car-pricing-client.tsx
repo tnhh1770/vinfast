@@ -1,11 +1,12 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- ảnh xem trước trong CRM, không phải LCP của trang public */
 
 import { useState } from "react";
 import type { Car } from "@/types";
 import { formatVnd } from "@/lib/format";
 import { updateCarPricingAction } from "@/app/actions/crm";
 import { toast } from "sonner";
-import { Edit2, Check, X, ShieldAlert } from "lucide-react";
+import { Edit2, Check, X } from "lucide-react";
 
 interface CarPricingClientProps {
   initialCars: Car[];
@@ -27,12 +28,17 @@ export function CarPricingClient({ initialCars, userRole }: CarPricingClientProp
       const car = cars.find((c) => c.slug === slug);
       if (!car) return;
 
-      await updateCarPricingAction(slug, editPrice, car.promotions || []);
+      const result = await updateCarPricingAction(slug, editPrice, car.promotions || []);
+      if (!result.success) {
+        toast.error(result.message ?? "Cập nhật thất bại");
+        return;
+      }
+
       setCars(cars.map((c) => (c.slug === slug ? { ...c, price: editPrice } : c)));
       setEditingSlug(null);
-      toast.success("Đã cập nhật giá xe thành công!");
+      toast.success(result.message ?? "Đã cập nhật giá xe.");
     } catch {
-      toast.error("Cập nhật thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     }
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone, MessageCircle, ExternalLink, Eye, Trash2 } from "lucide-react";
+import { Phone, MessageCircle, Trash2 } from "lucide-react";
 import type { Lead, LeadStatus } from "@/types";
 import { updateLeadStatusAction, deleteLeadAction } from "@/app/actions/crm";
 import { toast } from "sonner";
@@ -14,20 +14,22 @@ interface LeadTableProps {
 export function LeadTable({ leads, onSelectLead, userRole }: LeadTableProps) {
   async function handleStatusChange(leadId: string, status: LeadStatus) {
     try {
-      await updateLeadStatusAction(leadId, status);
-      toast.success("Đã cập nhật trạng thái");
+      const result = await updateLeadStatusAction(leadId, status);
+      if (result.success) toast.success(result.message ?? "Đã cập nhật trạng thái");
+      else toast.error(result.message ?? "Cập nhật thất bại");
     } catch {
-      toast.error("Cập nhật thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     }
   }
 
   async function handleDelete(leadId: string) {
     if (!confirm("Bạn có chắc chắn muốn xóa lead này?")) return;
     try {
-      await deleteLeadAction(leadId);
-      toast.success("Đã xóa Lead");
+      const result = await deleteLeadAction(leadId);
+      if (result.success) toast.success(result.message ?? "Đã xoá khách hàng");
+      else toast.error(result.message ?? "Xoá thất bại");
     } catch {
-      toast.error("Xóa thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     }
   }
 

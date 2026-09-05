@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutGrid, Table as TableIcon, Download, Search, Filter } from "lucide-react";
+import { LayoutGrid, Table as TableIcon, Download, Search } from "lucide-react";
 import type { Lead } from "@/types";
 import { LeadStatsCards } from "./lead-stats-cards";
 import { LeadKanban } from "./lead-kanban";
@@ -11,14 +11,24 @@ import { LeadDetailModal } from "./lead-detail-modal";
 interface LeadManagementClientProps {
   initialLeads: Lead[];
   userRole: string;
+  salesUsers?: string[];
 }
 
-export function LeadManagementClient({ initialLeads, userRole }: LeadManagementClientProps) {
+export function LeadManagementClient({
+  initialLeads,
+  userRole,
+  salesUsers = [],
+}: LeadManagementClientProps) {
   const [viewMode, setViewMode] = useState<"kanban" | "table">("kanban");
   const [search, setSearch] = useState("");
   const [carFilter, setCarFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  // Giữ id thay vì object: sau khi Server Action revalidate, modal phải đọc được
+  // bản ghi mới nhất chứ không mắc kẹt ở ảnh chụp lúc mở.
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const selectedLead = selectedLeadId
+    ? initialLeads.find((l) => String(l._id) === selectedLeadId) ?? null
+    : null;
 
   // Extract unique cars from leads for filter dropdown
   const cars = Array.from(new Set(initialLeads.map((l) => l.carInterest).filter(Boolean)));
@@ -96,7 +106,7 @@ export function LeadManagementClient({ initialLeads, userRole }: LeadManagementC
               }`}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
-              <span>Bảng Kanban</span>
+              <span>Bảng phễu</span>
             </button>
             <button
               onClick={() => setViewMode("table")}
@@ -112,7 +122,7 @@ export function LeadManagementClient({ initialLeads, userRole }: LeadManagementC
           </div>
 
           <a
-            href="/api/admin/leads/export"
+            href="/api/admin/leads/export/"
             download
             className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
           >
@@ -124,11 +134,11 @@ export function LeadManagementClient({ initialLeads, userRole }: LeadManagementC
 
       {/* Main View Area */}
       {viewMode === "kanban" ? (
-        <LeadKanban leads={filteredLeads} onSelectLead={(lead) => setSelectedLead(lead)} />
+        <LeadKanban leads={filteredLeads} onSelectLead={(lead) => setSelectedLeadId(String(lead._id))} />
       ) : (
         <LeadTable
           leads={filteredLeads}
-          onSelectLead={(lead) => setSelectedLead(lead)}
+          onSelectLead={(lead) => setSelectedLeadId(String(lead._id))}
           userRole={userRole}
         />
       )}
@@ -136,8 +146,9 @@ export function LeadManagementClient({ initialLeads, userRole }: LeadManagementC
       {/* Lead Detail Modal */}
       <LeadDetailModal
         lead={selectedLead}
-        onClose={() => setSelectedLead(null)}
+        onClose={() => setSelectedLeadId(null)}
         userRole={userRole}
+        salesUsers={salesUsers}
       />
     </div>
   );

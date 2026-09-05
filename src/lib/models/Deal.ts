@@ -7,7 +7,7 @@ export interface IDeal {
   creationDate: string;
   carType: string;
   returnDate: string;
-  paymentType: "Cash" | "Card";
+  paymentType: "Cash" | "Card" | "Transfer";
   totalPrice: number;
   status: "Pending" | "Signed" | "Completed" | "Cancelled";
   createdAt?: Date;
@@ -21,7 +21,7 @@ const DealSchema = new Schema<IDeal>(
     creationDate: { type: String, required: true },
     carType: { type: String, required: true },
     returnDate: { type: String, required: true },
-    paymentType: { type: String, enum: ["Cash", "Card"], default: "Cash" },
+    paymentType: { type: String, enum: ["Cash", "Card", "Transfer"], default: "Cash" },
     totalPrice: { type: Number, required: true },
     status: {
       type: String,

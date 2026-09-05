@@ -19,7 +19,7 @@ export async function GET() {
     success: true,
     data: setting || {
       currency: "VND",
-      language: "Vietnamese",
+      language: "Tiếng Việt",
       address: "115 Nguyễn Văn Linh, Phường Hải Châu, Đà Nẵng",
       state: "Đà Nẵng",
       emailNotification: true,

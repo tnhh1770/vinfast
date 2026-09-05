@@ -38,11 +38,13 @@ export function slugifyVi(input: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export function stripHtml(input: string): string {
+/** Bản ghi do CRM tạo có thể thiếu các trường mô tả -> nhận cả `undefined`. */
+export function stripHtml(input?: string | null): string {
+  if (!input) return "";
   return input.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-export function truncate(input: string, max = 160): string {
+export function truncate(input?: string | null, max = 160): string {
   const clean = stripHtml(input);
   if (clean.length <= max) return clean;
   return `${clean.slice(0, max - 1).replace(/[\s,.;:-]+\S*$/, "")}…`;

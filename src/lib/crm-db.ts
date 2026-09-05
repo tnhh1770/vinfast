@@ -8,7 +8,6 @@ import TransactionModel from "@/lib/models/Transaction";
 import CalendarEventModel from "@/lib/models/CalendarEvent";
 import LeadModel from "@/lib/models/Lead";
 import SettingModel from "@/lib/models/Setting";
-import UserModel from "@/lib/models/User";
 import type { Car, Lead } from "@/types";
 import type { IDeal } from "@/lib/models/Deal";
 import type { ITracking } from "@/lib/models/Tracking";
@@ -103,7 +102,7 @@ export async function getCrmSettings() {
   }
   return {
     currency: "VND",
-    language: "Vietnamese",
+    language: "Tiếng Việt",
     address: "115 Nguyễn Văn Linh, Phường Hải Châu, Đà Nẵng",
     state: "Đà Nẵng",
     emailNotification: true,

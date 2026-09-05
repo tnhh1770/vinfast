@@ -1,22 +1,41 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import crypto from "crypto";
-import { connectToDatabase, hasDatabase } from "@/lib/mongodb";
-import UserModel from "@/lib/models/User";
 import type { AdminUser } from "@/types";
 
 const SESSION_COOKIE = "admin_session";
+
+/** Khoá ký cookie phiên. Đổi khoá này = buộc mọi người đăng nhập lại. */
 const SECRET_KEY = process.env.JWT_SECRET || "vinfast-danang-crm-secret-key-2026";
+
+/**
+ * Khoá băm mật khẩu — CỐ TÌNH tách khỏi `JWT_SECRET`.
+ * Nếu dùng chung, việc xoay khoá phiên sẽ làm mọi mật khẩu đã lưu mất hiệu lực
+ * và không ai đăng nhập lại được. Giữ mặc định cũ để các hash đã seed vẫn khớp.
+ */
+const PASSWORD_SECRET =
+  process.env.PASSWORD_SECRET || "vinfast-danang-crm-secret-key-2026";
+
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
+  console.warn(
+    "[auth] Thiếu JWT_SECRET — đang dùng khoá mặc định trong mã nguồn. " +
+      "Hãy đặt JWT_SECRET trong biến môi trường trước khi chạy production.",
+  );
+}
 
 export function hashPassword(password: string): string {
   return crypto
-    .createHmac("sha256", SECRET_KEY)
+    .createHmac("sha256", PASSWORD_SECRET)
     .update(password)
     .digest("hex");
 }
 
 export function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
+  const computed = hashPassword(password);
+  if (typeof hash !== "string" || computed.length !== hash.length) return false;
+  // So sánh hằng thời gian để không lộ thông tin qua timing attack.
+  return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(hash));
 }
 
 export function createToken(payload: { id: string; email: string; name: string; role: string }): string {
@@ -35,7 +54,8 @@ export function verifyToken(token: string): { id: string; email: string; name: s
     const sig = raw.substring(lastDot + 1);
 
     const expectedSig = crypto.createHmac("sha256", SECRET_KEY).update(dataStr).digest("hex");
-    if (sig !== expectedSig) return null;
+    if (sig.length !== expectedSig.length) return null;
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
 
     const parsed = JSON.parse(dataStr);
     if (parsed.exp < Date.now()) return null;
@@ -82,4 +102,28 @@ export async function setSessionCookie(user: { id: string; email: string; name: 
 export async function removeSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE);
+}
+
+/**
+ * Dùng ở đầu mỗi trang trong `/admin` để không phụ thuộc hoàn toàn vào middleware.
+ * Không có session hợp lệ -> đá về trang đăng nhập thay vì render dữ liệu khách hàng.
+ */
+export async function requireAdminUser(redirectTo?: string): Promise<AdminUser> {
+  const user = await getSessionUser();
+  if (!user) {
+    const target = redirectTo
+      ? `/admin/login/?redirect=${encodeURIComponent(redirectTo)}`
+      : "/admin/login/";
+    redirect(target);
+  }
+  return user;
+}
+
+/** Chỉ cho phép role `admin` (thao tác xoá, quản lý người dùng...). */
+export async function requireRole(role: AdminUser["role"]): Promise<AdminUser> {
+  const user = await requireAdminUser();
+  if (user.role !== role) {
+    redirect("/admin/");
+  }
+  return user;
 }

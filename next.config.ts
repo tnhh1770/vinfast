@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   turbopack: { root: path.resolve(process.cwd()) },
   // Giữ nguyên dạng URL có dấu "/" ở cuối như bản gốc để không mất SEO.
   trailingSlash: true,
+  // Không tự sinh AGENTS.md / CLAUDE.md ở thư mục gốc.
+  agentRules: false,
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,

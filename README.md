@@ -36,7 +36,9 @@ Scripts:
 npm run dev         # chạy dev
 npm run build       # build production
 npm run start       # chạy bản build
-npm run seed        # nạp dữ liệu mẫu vào MongoDB
+npm run seed        # nạp dữ liệu website (xe, bài viết, trang chính sách)
+npm run seed:crm    # nạp dữ liệu mẫu CRM (deal, bid, giao dịch, lịch hẹn, lead)
+npm run seed:admin  # tạo tài khoản quản trị đầu tiên
 npm run lint        # ESLint
 npm run typecheck   # tsc --noEmit
 ```
@@ -83,13 +85,73 @@ npm run build && npm run start
 | `/[slug]/` | Bài viết & 7 trang chính sách (URL gốc cấp 1) |
 | `/sitemap.xml`, `/robots.txt` | Tự sinh từ dữ liệu thật |
 | `POST /api/leads/` | Nhận lead dạng JSON |
+| `/admin/*` | Cổng CRM quản trị (yêu cầu đăng nhập, `noindex`) |
 
 12 dòng xe: VF 8 All New, VF MPV 7, Limo Green, VF 3, VF 5, VF 6, VF 7, VF 9, EC Van,
 Minio Green, Herio Green, Nerio Green.
 
 ---
 
-## 4. Tối ưu SEO đã áp dụng
+## 4. CRM quản trị (`/admin`)
+
+Toàn bộ khu vực `/admin` và `/api/admin` được chặn ở tầng proxy (`src/proxy.ts`):
+cookie phiên phải có chữ ký HMAC hợp lệ và còn hạn, nếu không thì trang bị chuyển
+về màn hình đăng nhập còn API trả `401`. Mỗi trang quản trị gọi thêm
+`requireAdminUser()` như lớp bảo vệ thứ hai.
+
+### Phân hệ
+
+| Trang | Chức năng |
+|---|---|
+| `/admin/` | Dashboard: KPI lead / hợp đồng / doanh thu / tỉ lệ chốt, phễu bán hàng, hoạt động gần đây — tất cả tính từ MongoDB |
+| `/admin/leads/` | Kanban + danh sách lead, đổi trạng thái, mức ưu tiên, gán nhân viên phụ trách, ghi chú chăm sóc, xuất CSV |
+| `/admin/deals/` | Hợp đồng đặt cọc — thêm / sửa / xoá |
+| `/admin/calendar/` | Lịch hẹn lái thử, bàn giao, bảo dưỡng — thêm / sửa / xoá, tách lịch sắp tới và đã qua |
+| `/admin/tracking/` | Theo dõi tình trạng giao xe |
+| `/admin/active-bids/` | Phiên đấu giá — trả giá theo bước tối thiểu 10 triệu, đóng / mở phiên |
+| `/admin/listing/` | Kho xe — thêm / sửa / xoá bản ghi xe |
+| `/admin/cars/` | Bảng giá & ưu đãi từng dòng xe |
+| `/admin/posts/` | Bài viết — soạn, sửa, xoá; tự sinh slug tiếng Việt không dấu |
+| `/admin/statistics/` | Báo cáo: lead & doanh thu 9 tháng, phân khúc xe, nguồn lead, dòng xe được quan tâm |
+| `/admin/transaction/` | Giao dịch tài chính — thêm / sửa / xoá, lọc theo trạng thái, tổng hợp số tiền |
+| `/admin/search/` | Tìm kiếm toàn hệ thống: xe, khách hàng, hợp đồng, giao dịch |
+| `/admin/users/` | Quản lý tài khoản, phân vai trò, đặt lại mật khẩu (chỉ `admin`) |
+| `/admin/settings/` | Cấu hình đại lý + hồ sơ cá nhân + đổi mật khẩu |
+| `/admin/api-console/` | Gọi thử endpoint quản trị và xem JSON trả về |
+| `/admin/help/` | Hướng dẫn sử dụng & FAQ |
+
+### Vai trò
+
+* `admin` — toàn quyền, kể cả xoá dữ liệu và quản lý người dùng.
+* `sales` — dùng được nghiệp vụ bán hàng, không xoá được lead / bài viết và không vào được `/admin/users/`.
+
+Tạo tài khoản đầu tiên:
+
+```bash
+npm run seed:admin     # admin@vinfastdanang.net
+npm run seed:crm       # dữ liệu CRM mẫu + tài khoản sales
+```
+
+### Đồng bộ ra website
+
+Sửa xe hoặc bài viết trong CRM sẽ gọi `revalidatePath` cho trang chủ, `/xe/`,
+`/xe/[slug]/`, `/bang-gia-xe/`, `/tinh-phi-lan-banh/`, `/tin-tuc/` và `sitemap.xml`
+(`src/lib/revalidate.ts`), nên nội dung mới hiện ngay thay vì chờ hết chu kỳ ISR.
+
+### Biến môi trường bảo mật
+
+| Biến | Ý nghĩa |
+|---|---|
+| `JWT_SECRET` | Khoá ký cookie phiên đăng nhập. **Bắt buộc đặt trước khi lên production.** Đổi khoá = mọi người phải đăng nhập lại. |
+| `PASSWORD_SECRET` | Khoá băm mật khẩu, cố tình tách khỏi `JWT_SECRET`. Đổi khoá này sẽ vô hiệu hoá mọi mật khẩu đang lưu. |
+
+```bash
+openssl rand -hex 32     # sinh khoá
+```
+
+---
+
+## 5. Tối ưu SEO đã áp dụng
 
 **Metadata**
 - `generateMetadata` cho từng route: title, description, canonical, keywords.
@@ -121,7 +183,7 @@ Minio Green, Herio Green, Nerio Green.
 
 ---
 
-## 5. Cấu trúc thư mục
+## 6. Cấu trúc thư mục
 
 ```
 src/
@@ -141,9 +203,13 @@ src/
 │  ├─ home/                      # hero slider, showroom gallery, youtube facade
 │  ├─ news/, forms/, shared/     # post card, lead form, breadcrumb, JSON-LD
 │  └─ ui/                        # shadcn/ui
+├─ proxy.ts                      # chặn /admin và /api/admin bằng chữ ký phiên
 ├─ lib/
 │  ├─ mongodb.ts                 # kết nối Mongoose có cache + fallback
-│  ├─ models/                    # Car, Post, Page, Lead
+│  ├─ auth.ts, auth-edge.ts      # phiên đăng nhập (Node + Edge runtime)
+│  ├─ crm-stats.ts               # tổng hợp số liệu báo cáo từ CSDL
+│  ├─ revalidate.ts              # xoá cache ISR khi CRM đổi dữ liệu
+│  ├─ models/                    # Car, Post, Page, Lead, User, Deal, Bid…
 │  ├─ repo.ts                    # tầng truy vấn (DB → JSON fallback)
 │  ├─ calculator.ts              # công thức lăn bánh & lãi vay
 │  ├─ seo.ts, site.ts, format.ts
@@ -155,7 +221,7 @@ scripts/seed.mjs                 # nạp seed vào MongoDB
 
 ---
 
-## 6. Công thức tính (giữ đúng bản gốc)
+## 7. Công thức tính (giữ đúng bản gốc)
 
 **Phí lăn bánh**
 
@@ -176,9 +242,11 @@ Giá sau ưu đãi    = tổng dự toán − tổng ưu đãi + tùy chọn th�
 
 ---
 
-## 7. Ghi chú triển khai
+## 8. Ghi chú triển khai
 
 - Đổi `NEXT_PUBLIC_SITE_URL` sang domain thật trước khi build (ảnh hưởng canonical, OG, sitemap).
+- **Đặt `JWT_SECRET` trước khi chạy production** — nếu không, hệ thống dùng khoá mặc định
+  nằm trong mã nguồn và bất kỳ ai đọc được repo cũng tự ký được cookie quản trị.
 - Thay số hotline / email / địa chỉ tại `src/data/site.json`.
 - Website này là trang đại lý tham khảo, không phải trang chính thức của VinFast Việt Nam —
   nội dung miễn trừ trách nhiệm đã có sẵn ở footer và trang `/thong-tin-dai-ly-mien-tru-trach-nhiem/`.

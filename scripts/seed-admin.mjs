@@ -6,7 +6,8 @@ if (!globalThis.crypto) {
 }
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/vinfast-danang";
-const SECRET_KEY = process.env.JWT_SECRET || "vinfast-danang-crm-secret-key-2026";
+// Phải trùng PASSWORD_SECRET trong src/lib/auth.ts thì hash mới khớp lúc đăng nhập.
+const SECRET_KEY = process.env.PASSWORD_SECRET || "vinfast-danang-crm-secret-key-2026";
 
 function hashPassword(password) {
   return crypto

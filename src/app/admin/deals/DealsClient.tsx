@@ -1,11 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Edit3, Download, CheckCircle2, AlertTriangle, X } from "lucide-react";
+import { Plus, Trash2, Edit3, Download, AlertTriangle, X } from "lucide-react";
 import type { IDeal } from "@/lib/models/Deal";
+import { PAYMENT_METHOD, labelOf } from "@/lib/crm-labels";
+import { adminFetch, notify, readJson } from "@/lib/admin-api";
 
 interface DealsClientProps {
   initialDeals: IDeal[];
+}
+
+function newDealId() {
+  return `#DEAL-${Date.now().toString().slice(-6)}`;
 }
 
 export default function DealsClient({ initialDeals }: DealsClientProps) {
@@ -14,40 +20,41 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
   const [editingDeal, setEditingDeal] = useState<IDeal | null>(null);
   const [deletingDeal, setDeletingDeal] = useState<IDeal | null>(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const [formData, setFormData] = useState({
-    dealId: "#DEAL-1001",
+  // Lazy initializer: `dealId` có ràng buộc unique nên phải sinh mới mỗi phiên,
+  // nhưng không được gọi hàm impure ngay trong thân render.
+  const [formData, setFormData] = useState(() => ({
+    dealId: newDealId(),
     ownerName: "",
     creationDate: "05/09/2026",
     carType: "VinFast VF 8",
     returnDate: "15/09/2026",
     paymentType: "Transfer",
     totalPrice: 999000000,
-  });
+  }));
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     try {
-      const res = await fetch("/api/admin/deals", {
+      const res = await adminFetch("/api/admin/deals/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setDeals((prev) => [data.data, ...prev]);
         setIsAddOpen(false);
-        setMessage({ type: "success", text: `Đã tạo hợp đồng mới cho ${data.data.ownerName}!` });
+        notify({ type: "success", text: `Đã tạo hợp đồng mới cho ${data.data.ownerName}!` });
       } else {
-        setMessage({ type: "error", text: data.message || "Tạo hợp đồng thất bại." });
+        notify({ type: "error", text: data.message || "Tạo hợp đồng thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -57,25 +64,25 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
     e.preventDefault();
     if (!editingDeal) return;
     setLoading(true);
-    setMessage(null);
+    notify(null);
 
     try {
-      const res = await fetch(`/api/admin/deals/${editingDeal._id}`, {
+      const res = await adminFetch(`/api/admin/deals/${editingDeal._id}/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success && data.data) {
         setDeals((prev) => prev.map((d) => (d._id === editingDeal._id ? { ...d, ...data.data } : d)));
         setEditingDeal(null);
-        setMessage({ type: "success", text: "Đã cập nhật hợp đồng thành công!" });
+        notify({ type: "success", text: "Đã cập nhật hợp đồng thành công!" });
       } else {
-        setMessage({ type: "error", text: data.message || "Cập nhật thất bại." });
+        notify({ type: "error", text: data.message || "Cập nhật thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -86,20 +93,20 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/admin/deals/${deletingDeal._id}`, {
+      const res = await adminFetch(`/api/admin/deals/${deletingDeal._id}/`, {
         method: "DELETE",
       });
-      const data = await res.json();
+      const data = await readJson(res);
 
       if (data.success) {
         setDeals((prev) => prev.filter((d) => d._id !== deletingDeal._id));
-        setMessage({ type: "success", text: `Đã xóa hợp đồng ${deletingDeal.dealId} khỏi MongoDB.` });
+        notify({ type: "success", text: `Đã xóa hợp đồng ${deletingDeal.dealId} khỏi MongoDB.` });
         setDeletingDeal(null);
       } else {
-        setMessage({ type: "error", text: data.message || "Xóa thất bại." });
+        notify({ type: "error", text: data.message || "Xóa thất bại." });
       }
     } catch {
-      setMessage({ type: "error", text: "Lỗi kết nối máy chủ." });
+      notify({ type: "error", text: "Lỗi kết nối máy chủ." });
     } finally {
       setLoading(false);
     }
@@ -108,28 +115,10 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
-      {message && (
-        <div
-          className={`flex items-center justify-between rounded-xl p-4 text-xs font-medium border shadow-lg ${
-            message.type === "success"
-              ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-300"
-              : "bg-rose-950/80 border-rose-500/40 text-rose-300"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{message.text}</span>
-          </div>
-          <button onClick={() => setMessage(null)} className="text-slate-400 hover:text-white">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {/* Header Controls */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Deals (Quản Lý Hợp Đồng MongoDB)</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Quản lý hợp đồng</h1>
           <p className="text-xs text-slate-400 mt-0.5">
             Tổng cộng <strong className="text-emerald-400 font-semibold">{deals.length} hợp đồng</strong> truy vấn trực tiếp từ CSDL database
           </p>
@@ -139,7 +128,7 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
           <button
             onClick={() => {
               setFormData({
-                dealId: `#DEAL-${Math.floor(1000 + Math.random() * 9000)}`,
+                dealId: newDealId(),
                 ownerName: "",
                 creationDate: new Date().toLocaleDateString("en-US"),
                 carType: "VinFast VF 8",
@@ -156,12 +145,12 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
           </button>
 
           <a
-            href="/api/admin/deals"
+            href="/api/admin/deals/"
             target="_blank"
             className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Export Deals API</span>
+            <span>Xuất JSON hợp đồng</span>
           </a>
         </div>
       </div>
@@ -195,13 +184,11 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
                 <td className="px-5 py-4 font-medium text-blue-300">{deal.carType}</td>
                 <td className="px-5 py-4">
                   <span
-                    className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                      deal.paymentType === "Card"
-                        ? "bg-purple-950 text-purple-300 border border-purple-800/40"
-                        : "bg-emerald-950 text-emerald-300 border border-emerald-800/40"
+                    className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      labelOf(PAYMENT_METHOD, deal.paymentType).className
                     }`}
                   >
-                    {deal.paymentType}
+                    {labelOf(PAYMENT_METHOD, deal.paymentType).label}
                   </span>
                 </td>
                 <td className="px-5 py-4 text-right font-bold text-emerald-400 text-sm">
@@ -238,6 +225,12 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
             ))}
           </tbody>
         </table>
+
+        {deals.length === 0 && (
+          <p className="py-14 text-center text-xs text-slate-500">
+            Chưa có hợp đồng nào. Bấm “Tạo Hợp Đồng” để thêm mới.
+          </p>
+        )}
       </div>
 
       {/* Modal Add Deal */}

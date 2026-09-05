@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone, MessageCircle, Clock, ChevronRight, ChevronLeft, MoreHorizontal } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import type { Lead, LeadStatus } from "@/types";
 import { updateLeadStatusAction } from "@/app/actions/crm";
 import { toast } from "sonner";
@@ -30,10 +30,11 @@ export function LeadKanban({ leads, onSelectLead }: LeadKanbanProps) {
 
     const nextStatus = order[nextIdx];
     try {
-      await updateLeadStatusAction(leadId, nextStatus);
-      toast.success("Đã di chuyển trạng thái Lead");
+      const result = await updateLeadStatusAction(leadId, nextStatus);
+      if (result.success) toast.success(result.message ?? "Đã di chuyển trạng thái");
+      else toast.error(result.message ?? "Di chuyển thất bại");
     } catch {
-      toast.error("Di chuyển thất bại");
+      toast.error("Lỗi kết nối máy chủ.");
     }
   }
 

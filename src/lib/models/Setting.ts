@@ -14,7 +14,7 @@ export interface ISetting {
 const SettingSchema = new Schema<ISetting>(
   {
     currency: { type: String, default: "VND" },
-    language: { type: String, default: "Vietnamese" },
+    language: { type: String, default: "Tiếng Việt" },
     address: { type: String, default: "Đà Nẵng, Việt Nam" },
     state: { type: String, default: "Đà Nẵng" },
     emailNotification: { type: Boolean, default: true },
